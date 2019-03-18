@@ -7,7 +7,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = ""   # Do not use GPU
 
 import TensorFlowAnalysis as tfa
 from tensorflow.python.client import timeline
-
+from root_numpy import root2array, rec2array, tree2array
 from ROOT import TFile,TChain,TTree
 
 if __name__ == "__main__" : 
