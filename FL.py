@@ -8,7 +8,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = ""   # Do not use GPU
 import TensorFlowAnalysis as tfa
 from tensorflow.python.client import timeline
 
-from ROOT import TFile
+from ROOT import TFile,TChain,TTree
 
 if __name__ == "__main__" : 
   phsp = tfa.RectangularPhaseSpace( ( (-1., 1.) ) )
