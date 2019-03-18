@@ -1,6 +1,7 @@
 import tensorflow as tf
 import sys, os
 import numpy as np
+from math import cos,sin
 sys.path.append("../")
 os.environ["CUDA_VISIBLE_DEVICES"] = ""   # Do not use GPU
 
@@ -49,20 +50,25 @@ if __name__ == "__main__" :
 
     sin2Thetast = (2.0 * sinThetast * cosThetast)
     cos2Thetal = (2.0 * cosThetal * cosThetal - 1.0)
-
+    coschi=cos(chi)
+    sinchi=sin(chi)
+    cos2chi=2*coschi*coschi-1
+    sin2chi=2*sinchi*coschi
+    
+    
     # Decay density
-    pdf  = (9.0/(32.np.pi)) * I1c* cosThetast*cosThetast
-    pdf +=  (9.0/(32.np.pi)) * I1s * sinTheta2st
-    pdf +=  (9.0/(32.np.pi)) * I2c * cosThetast*cosThetast*cos2Thetal
-    pdf +=  (9.0/(32.np.pi)) * I2s * sinTheta2st *  cos2Thetal
-    pdf +=  (9.0/(32.np.pi))* I6c *cosThetast*cosThetast *cosThetal
-    pdf +=  (9.0/(32.np.pi))* I6s * sinTheta2st *  cosThetal
-    pdf +=  (9.0/(32.np.pi))* I3 * np.cos(2*chi) * sinTheta2l * sinTheta2st
-    pdf +=  (9.0/(32.np.pi))* I9 * np.sin(2*chi) * sinTheta2l * sinTheta2st
-    pdf +=  (9.0/(32.np.pi))* I4 * np.cos(chi) * 2 * sinThetal * cosThetal * sin2Thetast 
-    pdf +=  (9.0/(32.np.pi))* I8 * np.sin(chi) * 2 * sinThetal * cosThetal * sin2Thetast 
-    pdf +=  (9.0/(32.np.pi))* I5 * np.cos(chi) * sinThetal  * sin2Thetast 
-    pdf +=  (9.0/(32.np.pi))* I7 * np.sin(chi) * sinThetal  * sin2Thetast 
+    pdf  = (9.0/(32*np.pi)) * I1c* cosThetast*cosThetast
+    pdf +=  (9.0/(32*np.pi)) * I1s * sinTheta2st
+    pdf +=  (9.0/(32*np.pi)) * I2c * cosThetast*cosThetast*cos2Thetal
+    pdf +=  (9.0/(32*np.pi)) * I2s * sinTheta2st *  cos2Thetal
+    pdf +=  (9.0/(32*np.pi))* I6c *cosThetast*cosThetast *cosThetal
+    pdf +=  (9.0/(32*np.pi))* I6s * sinTheta2st *  cosThetal
+    pdf +=  (9.0/(32*np.pi))* I3 * cos2chi * sinTheta2l * sinTheta2st
+    pdf +=  (9.0/(32*np.pi))* I9 * sin2chi * sinTheta2l * sinTheta2st
+    pdf +=  (9.0/(32*np.pi))* I4 * coschi * 2 * sinThetal * cosThetal * sin2Thetast 
+    pdf +=  (9.0/(32*np.pi))* I8 * sinchi * 2 * sinThetal * cosThetal * sin2Thetast 
+    pdf +=  (9.0/(32*np.pi))* I5 * coschi * sinThetal  * sin2Thetast 
+    pdf +=  (9.0/(32*np.pi))* I7 * sinchi * sinThetal  * sin2Thetast 
 
     return pdf
 
@@ -105,7 +111,7 @@ if __name__ == "__main__" :
   # Run toy MC corresponding to fitted result
   fit_data = tfa.RunToyMC( sess, model(data_ph), data_ph, phsp, 1000000, majorant, chunk = 1000000)
   f = TFile.Open("toyresult.root", "RECREATE")
-  tfa.FillNTuple("toy", fit_data, ["cos1", "cos2", "phi" ])
+  tfa.FillNTuple("toy", fit_data, ["cos*", "cosl", "chi" ])
   f.Close()
 
   # Store timeline profile 
