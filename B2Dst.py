@@ -38,6 +38,7 @@ if __name__ == "__main__" :
   def model(x) : 
     # Get phase space variables
     cosThetast = phsp.CosTheta1(x)     #D* angle costhetast
+
     cosThetal = phsp.CosTheta2(x)    #Lepton angle costhetal
     chi = phsp.Phi(x)
     # Derived quantities
