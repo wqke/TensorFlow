@@ -11,6 +11,23 @@ from tensorflow.python.client import timeline
 from ROOT import TFile
 
 if __name__ == "__main__" : 
+  vals = {'I1c': 3.03,
+            'I1s': 2.04,
+            'I2c': -0.89,
+            'I2s': 0.35,
+            'I3': -0.56,
+            'I4': -0.74,
+            'I5': 1.61,
+            'I6c': 1.96,
+            'I6s': -1.38,
+            'I7': 0.,
+            'I8': 0.,
+            'I9': 0.}
+  tot_rate = 0.
+  for v in vals:
+    tot_rate += vals[v]
+  for v in vals:
+    vals[v] = vals[v]/tot_rate
   phsp = tfa.FourBodyAngularPhaseSpace()
   a=tfa.FitParameter("a" , 0., -1.000, 1.000, 0.01) 
   c=tfa.FitParameter("c" , 0., -1.000, 1.000, 0.01) 
