@@ -40,22 +40,17 @@ if __name__ == "__main__" :
     cosThetast = phsp.CosTheta1(x)     #D* angle costhetast
     cosThetal = phsp.CosTheta2(x)    #Lepton angle costhetal
     chi = phsp.Phi(x)
-
     # Derived quantities
     sinThetast = tfa.Sqrt( 1.0 - cosThetast * cosThetast )
     sinThetal = tfa.Sqrt( 1.0 - cosThetal * cosThetal )
-
     sinTheta2st =  (1.0 - cosThetast * cosThetast)
     sinTheta2l =  (1.0 - cosThetal * cosThetal)
-
     sin2Thetast = (2.0 * sinThetast * cosThetast)
     cos2Thetal = (2.0 * cosThetal * cosThetal - 1.0)
-    coschi=cos(chi)
-    sinchi=sin(chi)
+    coschi=tf.cos(chi)
+    sinchi=tf.sin(chi)
     cos2chi=2*coschi*coschi-1
-    sin2chi=2*sinchi*coschi
-    
-    
+    sin2chi=2*sinchi*coschi    
     # Decay density
     pdf  = (9.0/(32*np.pi)) * I1c* cosThetast*cosThetast
     pdf +=  (9.0/(32*np.pi)) * I1s * sinTheta2st
@@ -69,7 +64,6 @@ if __name__ == "__main__" :
     pdf +=  (9.0/(32*np.pi))* I8 * sinchi * 2 * sinThetal * cosThetal * sin2Thetast 
     pdf +=  (9.0/(32*np.pi))* I5 * coschi * sinThetal  * sin2Thetast 
     pdf +=  (9.0/(32*np.pi))* I7 * sinchi * sinThetal  * sin2Thetast 
-
     return pdf
 
   ### End of model description
@@ -119,3 +113,4 @@ if __name__ == "__main__" :
   chrome_trace = fetched_timeline.generate_chrome_trace_format()
   with open('timeline.json', 'w') as f:
     f.write(chrome_trace)
+  
