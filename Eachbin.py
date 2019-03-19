@@ -74,7 +74,7 @@ if __name__ == "__main__" :
     pdf +=  (9.0/(32*np.pi))* I6c *cosThetast*cosThetast *cosThetal
     pdf +=  (9.0/(32*np.pi))* I6s * sinTheta2st *  cosThetal
     pdf +=  (9.0/(32*np.pi))* I3 * cos2chi * sinTheta2l * sinTheta2st
-    pdf += (1.0 -I1c -I1s -I2c -I2s -I3 -I4 -I5 - I6c -I6s - I7 -I8) * sin2chi * sinThetal * sinThetal * sinThetast * sinThetast
+    pdf += (9.0/(32*np.pi))*(1.0 -I1c -I1s -I2c -I2s -I3 -I4 -I5 - I6c -I6s - I7 -I8) * sin2chi * sinThetal * sinThetal * sinThetast * sinThetast
     pdf +=  (9.0/(32*np.pi))* I4 * coschi * 2 * sinThetal * cosThetal * sin2Thetast 
     pdf +=  (9.0/(32*np.pi))* I8 * sinchi * 2 * sinThetal * cosThetal * sin2Thetast 
     pdf +=  (9.0/(32*np.pi))* I5 * coschi * sinThetal  * sin2Thetast 
@@ -98,13 +98,19 @@ if __name__ == "__main__" :
 
   tree = TChain("DecayTree")
   tree.Add("/home/ke/pythonap/model_tree_vars.root")
+
+  data_sample = tree2array(tree,branches=['costheta_X_true','costheta_L_true','chi_true'],selection='q2_true >= 3.23624062 & q2_true<5.09804311')
+  data_sample = rec2array(data_sample)
+
+"""
+[ 3.23624062  5.09804311  6.95984559  8.82164808 10.68345056]
   branch_names = ["costheta_X_true","costheta_L_true","chi_true"]
   data_sample = tree2array(tree,branch_names)
   data_sample = rec2array(data_sample)
+"""
+
   data_sample = sess.run(phsp.Filter(data_sample))
   data_sample = sess.run(phsp.Filter(data_sample))
-  
-  
   
   # Estimate the maximum of PDF for toy MC generation using accept-reject method
   majorant = tfa.EstimateMaximum(sess, model(data_ph), data_ph, norm_sample )*1.1
@@ -137,4 +143,4 @@ if __name__ == "__main__" :
   fetched_timeline = timeline.Timeline(run_metadata.step_stats)
   chrome_trace = fetched_timeline.generate_chrome_trace_format()
   with open('timeline.json', 'w') as f:
-f.write(chrome_trace)
+    f.write(chrome_trace)
