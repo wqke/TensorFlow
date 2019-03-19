@@ -16,7 +16,6 @@ if __name__ == "__main__" :
   def model(x) : 
     # Get phase space variables
     cosThetast = phsp.Coordinate(x, 0) #D* angle costhetast
-
     # Derived quantities
     sinThetast = tfa.Sqrt( 1.0 - cosThetast * cosThetast )
     sinTheta2st =  (1.0 - cosThetast * cosThetast)
