@@ -11,7 +11,7 @@ from root_numpy import root2array, rec2array, tree2array
 from ROOT import TFile,TChain,TTree
 
 if __name__ == "__main__" : 
-  phsp = tfa.RectangularPhaseSpace( ( (-1., 1.) ) )
+  phsp = tfa.RectangularPhaseSpace( ( (-1., 1.)) )
   FL  = tfa.FitParameter("FL" ,  0.600,  0.000, 1.000, 0.01)    #Taken from Belle measurement 
   def model(x) : 
     # Get phase space variables
@@ -43,6 +43,9 @@ if __name__ == "__main__" :
 
   # Create normalisation sample (uniform sample in the 3D phase space)
   norm_sample = sess.run( phsp.UniformSample(1000000) )
+  #norm_grid = 500
+  #norm_sample = sess.run( phsp.RectangularGridSample(norm_grid, norm_grid) )
+
 
   tree = TChain("DecayTree")
   tree.Add("/home/ke/pythonap/model_tree_vars.root")
