@@ -12,6 +12,7 @@ from tensorflow.python.client import timeline
 from root_numpy import root2array, rec2array, tree2array
 from ROOT import TFile,TChain,TTree
 
+
 if __name__ == "__main__" : 
   # Four body angular phase space is described by 3 angles. 
   phsp = tfa.RectangularPhaseSpace( ( (-1., 1.), (-1., 1.), (-math.pi, math.pi) ) )
@@ -33,9 +34,6 @@ if __name__ == "__main__" :
   for v in vals:
     vals[v] = vals[v]/tot_rate
   # Fit parameters of the model 
-  """
-  FL  = tfa.FitParameter("FL" ,  0.600,  0.000, 1.000, 0.01)    #Taken from Belle measurement
-  """
   I8  = tfa.FitParameter("I8",vals["I8"] ,  0.000, 1.000, 0.01)   
   I7 = tfa.FitParameter("I7",vals["I7"], -1.000, 1.000, 0.01)
   I6s  = tfa.FitParameter("I6s",vals["I6s"] ,  -1.000, 1.000, 0.01) 
@@ -47,6 +45,7 @@ if __name__ == "__main__" :
   I2c  = tfa.FitParameter("I2c",vals["I2c"] , -1.000, 1.000, 0.01) 
   I1s  = tfa.FitParameter("I1s",vals["I1s"] , 0.000, 1.000, 0.01)    
   I1c = tfa.FitParameter("I1c",vals["I1c"], 0.000, 1.000, 0.01)
+  params = [ I1c, I1s, I2c, I2s, I6c, I6s, I3, I9, I4, I8, I5, I7 ]
   
   ### Start of model description
 
@@ -67,18 +66,18 @@ if __name__ == "__main__" :
     cos2chi=2*coschi*coschi-1
     sin2chi=2*sinchi*coschi    
     # Decay density
-    pdf  = (9.0/(32*np.pi)) * I1c* cosThetast*cosThetast
-    pdf +=  (9.0/(32*np.pi)) * I1s * sinTheta2st
-    pdf +=  (9.0/(32*np.pi)) * I2c * cosThetast*cosThetast*cos2Thetal
-    pdf +=  (9.0/(32*np.pi)) * I2s * sinTheta2st *  cos2Thetal
-    pdf +=  (9.0/(32*np.pi))* I6c *cosThetast*cosThetast *cosThetal
-    pdf +=  (9.0/(32*np.pi))* I6s * sinTheta2st *  cosThetal
-    pdf +=  (9.0/(32*np.pi))* I3 * cos2chi * sinTheta2l * sinTheta2st
+    pdf  =  I1c* cosThetast*cosThetast
+    pdf += I1s * sinTheta2st
+    pdf +=  I2c * cosThetast*cosThetast*cos2Thetal
+    pdf +=  I2s * sinTheta2st *  cos2Thetal
+    pdf +=  I6c *cosThetast*cosThetast *cosThetal
+    pdf +=  I6s * sinTheta2st *  cosThetal
+    pdf += I3 * cos2chi * sinTheta2l * sinTheta2st
     pdf += (1.0 -I1c -I1s -I2c -I2s -I3 -I4 -I5 - I6c -I6s - I7 -I8) * sin2chi * sinThetal * sinThetal * sinThetast * sinThetast
-    pdf +=  (9.0/(32*np.pi))* I4 * coschi * 2 * sinThetal * cosThetal * sin2Thetast 
-    pdf +=  (9.0/(32*np.pi))* I8 * sinchi * 2 * sinThetal * cosThetal * sin2Thetast 
-    pdf +=  (9.0/(32*np.pi))* I5 * coschi * sinThetal  * sin2Thetast 
-    pdf +=  (9.0/(32*np.pi))* I7 * sinchi * sinThetal  * sin2Thetast 
+    pdf +=  I4 * coschi * 2 * sinThetal * cosThetal * sin2Thetast 
+    pdf +=  I8 * sinchi * 2 * sinThetal * cosThetal * sin2Thetast 
+    pdf +=  I5 * coschi * sinThetal  * sin2Thetast 
+    pdf +=  I7 * sinchi * sinThetal  * sin2Thetast 
     return pdf
 
   ### End of model description
@@ -97,15 +96,12 @@ if __name__ == "__main__" :
   norm_sample = sess.run( phsp.UniformSample(1000000) )
 
   tree = TChain("DecayTree")
-  tree.Add("/home/ke/pythonap/model_tree_vars.root")
+  tree.Add("/home/ke/calculateI/model_total_new.root")
   branch_names = ["costheta_X_true","costheta_L_true","chi_true"]
-
   data_sample = tree2array(tree,branches=['costheta_X_true','costheta_L_true','chi_true'],selection='q2_true >= 3.20305994 & q2_true<5.0738137')
   data_sample = rec2array(data_sample)
-  
   #array([ 3.20305994,  5.0738137 ,  6.94456747,  8.81532123, 10.686075  ])   borders
-  #array([4.13843682, 6.00919059, 7.87994435, 9.75069811])   centers
-  
+  #array([4.13843682, 6.00919059, 7.87994435, 9.75069811])   centers  
   data_sample = sess.run(phsp.Filter(data_sample))
   data_sample = sess.run(phsp.Filter(data_sample))
   
@@ -151,10 +147,11 @@ if __name__ == "__main__" :
   """"""
   
   
-bin1={'I9': (0.0, 0.0009757628116016104),'I8': (0.01575390796369075, 0.01129185470054736), 'I6c': (0.300886347692888, 0.017107596706314177), 'I3': (-0.07800445929054256, 0.011279507881430506), 'I2s': (-0.001169543090427272, 0.009601568117104387), 'I5': (2.0094889308097663e-08, 0.004406879139363523), 'I4': (0.008825337969216474, 0.011460821468293414), 'I7': (-0.005477299024893023, 0.010619485965988995), 'loglh': -403.03860490452234, 'I1s': (0.2545933710463001, 0.012698113603691108), 'iterations': 568, 'I6s': (-0.08042788774708043, 0.010343271766412476), 'I2c': (-0.004196483017134822, 0.019859253776980168), 'I1c': (0.5888471710047258, 0.020761502463508164)}
-bin2={'I9': (0.0, 0.0005247614222594899),'I8': (9.536740132598531e-07, 0.8711048945615066), 'I6c': (0.36162361623616235, 0.0005541851212953752), 'I3': (-0.10332103321033215, 0.0005513870312759961), 'I2s': (0.06457564575645747, 0.0005511794434117645), 'I5': (0.2970479704797048, 0.000546917811930614), 'I4': (-0.13653136531365317, 0.0005508421189155399), 'I7': (0.0, 0.0005380257181550885), 'loglh': 849.3162218782222, 'I1s': (0.3763837638376384, 0.0005467860561387816), 'iterations': 283, 'I6s': (-0.25461254612546125, 0.0005533711409203557), 'I2c': (-0.16420664206642066, 0.0005556751290641815), 'I1c': (0.559040590405904, 0.0005526458859542172)}
-bin3={'I9': (0.0, 0.0004641382009709094),'I8': (9.536740132598531e-07, 0.8317030215534756), 'I6c': (0.36162361623616235, 0.0005030488787721166), 'I3': (-0.10332103321033215, 0.0005006903629491966), 'I2s': (0.06457564575645747, 0.0004990957020570841), 'I5': (0.2970479704797048, 0.0004959993334389956), 'I4': (-0.13653136531365317, 0.00049887269982829), 'I7': (0.0, 0.0004875607072261645), 'loglh': 1176.50811426245, 'I1s': (0.3763837638376384, 0.0004956926887378366), 'iterations': 273, 'I6s': (-0.25461254612546125, 0.0005020541056828809), 'I2c': (-0.16420664206642066, 0.0005042439608666793), 'I1c': (0.559040590405904, 0.0005008261714464224)}
-bin4={'I9': (0.0, 0.0005393949022374223),'I8': (9.536740132598531e-07, 0.8136807401117219), 'I6c': (0.36162361623616235, 0.0005208707637417986), 'I3': (-0.10332103321033215, 0.0005171554591967831), 'I2s': (0.06457564575645747, 0.0005180596389131598), 'I5': (0.2970479704797048, 0.0005138859289743891), 'I4': (-0.13653136531365317, 0.0005176344656264154), 'I7': (0.0, 0.000504517360304213), 'loglh': 1280.5226864658075, 'I1s': (0.3763837638376384, 0.0005116529206002918), 'iterations': 287, 'I6s': (-0.25461254612546125, 0.0005185882708106937), 'I2c': (-0.16420664206642066, 0.0005224314533861518), 'I1c': (0.559040590405904, 0.0005198002371440968)}
+bin1={'I9': (0.0, 0.010607627405155862),'I8': (0.015669054754884504, 0.011335544303172546), 'I6c': (0.30089077571560785, 0.01730526182048453), 'I3': (-0.07664697712810142, 0.011270441555538968), 'I2s': (-0.0003613276419075495, 0.009587158432862453), 'I5': (5.397449154287415e-11, 0.004335453833712172), 'I4': (0.00876995407580794, 0.011473610838036552), 'I7': (-0.005185044785479098, 0.010626871338991428), 'loglh': -402.30161967940535, 'I1s': (0.2548081911160103, 0.012996547048620383), 'iterations': 362, 'I6s': (-0.08100891029547885, 0.010387232699476334), 'I2c': (-0.00843456616903926, 0.019896499087183883), 'I1c': (0.5871393365296936, 0.021625616329128405)}
+bin2={'I9': (0.0, 0.005681658591526306), 'I8': (0.0029117094738847493, 0.009397343723619223), 'I6c': (0.26078103147355874, 0.012436705411886129), 'I3': (-0.06474280093362195, 0.008244597890732785), 'I2s': (0.0027734696127090785, 0.007068300055282806), 'I5': (0.013646055631861498, 0.007278847585266174), 'I4': (0.01373083758936433, 0.008087940666354099), 'I7': (-0.000493788381376703, 0.007457786963463553), 'loglh': -696.0002940131169, 'I1s': (0.3768367129008818, 0.012467219239719135), 'iterations': 361, 'I6s': (-0.17310723212650447, 0.009115185671568826), 'I2c': (-0.055520666163171306, 0.014297542892824588), 'I1c': (0.6213092306506548, 0.016889172253060192)}
+bin3={'I9': (0.0, 0.005038506691403211), 'I8': (0.002998316736955331, 0.011303795995435378), 'I6c': (0.2520912095138095, 0.014334825722033734), 'I3': (-0.1119322156906184, 0.010636718506512044), 'I2s': (0.05819583063682332, 0.008706772771723381), 'I5': (0.0029011056148955383, 0.00862105371815386), 'I4': (-0.018668273938552415, 0.00983915807908392), 'I7': (-0.0027087524968834042, 0.008871632573932864), 'loglh': -862.535977329059, 'I1s': (0.5730829334797811, 0.020646007736140448), 'iterations': 372, 'I6s': (-0.31394145291597564, 0.014214847560629906), 'I2c': (-0.14024241732992504, 0.01804389675629542), 'I1c': (0.7123624206728822, 0.022364154232234812)}
+bin4={'I9': (0.0, 0.005926033724912738), 'I8': (0.0028101259361832387, 0.011427876490151978), 'I6c': (0.19946960495571386, 0.01800712905778673), 'I3': (-0.13335062192907388, 0.015597751493046264), 'I2s': (0.14155232686715502, 0.013202333355721962), 'I5': (3.5079383842173684e-11, 0.0041677085545615555), 'I4': (0.0017109855844870125, 0.013432819471393742), 'I7': (-0.0021419965410274244, 0.012304207715664095), 'loglh': -509.8724746438387, 'I1s': (0.7670004586185274, 0.03348489955439782), 'iterations': 341, 'I6s': (-0.3396012270894664, 0.020187787639947607), 'I2c': (-0.30517305907948655, 0.027898210679316915), 'I1c': (0.6786459157255944, 0.026987045943140886)}
+
 centers=[4.13843682, 6.00919059, 7.87994435, 9.75069811]
 borders=[ 3.20305994,  5.0738137 ,  6.94456747,  8.81532123, 10.686075  ]
 
@@ -241,13 +238,28 @@ I1cerrlist_th=[(0.47e-16)/(2.0198e-15),0.32/15.044,0.23/11.23,0.15/7.52]
 q2err=[centers[1]-centers[0],centers[1]-centers[0],centers[1]-centers[0],centers[1]-centers[0]]
 q2err_th=[(6.2-min(borders))/2.,0.9,1.3/2.,(max(borders)-8.9)/2.]
 centers_th=[(6.2-min(borders))/2.+min(borders),0.9+6.2,7.6+0.65,8.9+(max(borders)-8.9)/2.]
+
+
+""""""
+plt.errorbar(centers,I5list, xerr=q2err,yerr=I5errlist, fmt='o', color='#3F7F4C',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I5 - Rapidsim(total geometry)')
+
+
+plt.errorbar(centers_th,I5list_th, xerr=q2err_th,yerr=I5errlist_th, fmt='o', color='#FF9848',
+ecolor='lightblue', elinewidth=3, capsize=0,label='I5 - Theory')
+
+plt.xlabel(r'$q^2$ [GeV$^2$]')
+plt.ylabel(r'$I_{5}$ ($q^2$)')
+plt.title(r'$I_5$',fontsize=14, color='black')
+plt.legend()
+
 """"""
 plt.errorbar(centers,I4list, xerr=q2err,yerr=I4errlist, fmt='o', color='#3F7F4C',
 ecolor='lightgray', elinewidth=3, capsize=0,label='I4 - Rapidsim(total geometry)')
 
 
 plt.errorbar(centers_th,I4list_th, xerr=q2err_th,yerr=I4errlist_th, fmt='o', color='#FF9848',
-ecolor='lightgray', elinewidth=3, capsize=0,label='I4 - Theory')
+ecolor='lightblue', elinewidth=3, capsize=0,label='I4 - Theory')
 
 plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$I_{4}$ ($q^2$)')
@@ -260,7 +272,7 @@ ecolor='lightgray', elinewidth=3, capsize=0,label='I3 - Rapidsim(total geometry)
 
 
 plt.errorbar(centers_th,I3list_th, xerr=q2err_th,yerr=I3errlist_th, fmt='o', color='#FF9848',
-ecolor='lightgray', elinewidth=3, capsize=0,label='I3 - Theory')
+ecolor='lightblue', elinewidth=3, capsize=0,label='I3 - Theory')
 
 plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$I_{3}$ ($q^2$)')
@@ -269,17 +281,107 @@ plt.legend()
 
 
 """"""
-plt.errorbar(centers,I7list, xerr=q2err,yerr=I7errlist, fmt='o', color='#3F7F4C',
-ecolor='lightgray', elinewidth=3, capsize=0,label='I7 - Rapidsim(total geometry)')
+plt.errorbar(centers,I1clist, xerr=q2err,yerr=I1cerrlist, fmt='o', color='#3F7F4C',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I1c - Rapidsim(total geometry)')
 
 
-plt.errorbar(centers_th,I7list_th, xerr=q2err_th,yerr=I7errlist_th, fmt='o', color='#FF9848',
-ecolor='lightgray', elinewidth=3, capsize=0,label='I7 - Theory')
+plt.errorbar(centers_th,I1clist_th, xerr=q2err_th,yerr=I1cerrlist_th, fmt='o', color='#FF9848',
+ecolor='lightblue', elinewidth=3, capsize=0,label='I1c - Theory')
 
 plt.xlabel(r'$q^2$ [GeV$^2$]')
-plt.ylabel(r'$I_{7}$ ($q^2$)')
-plt.title(r'$I_{7}$',fontsize=14, color='black')
+plt.ylabel(r'$I_{1c}$ ($q^2$)')
+plt.title(r'$I_{1c}$',fontsize=14, color='black')
 plt.legend()
 
+
+""""""
+
+plt.errorbar(centers,I2clist, xerr=q2err,yerr=I2cerrlist, fmt='o', color='#3F7F4C',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I2c - Rapidsim(total geometry)')
+
+
+plt.errorbar(centers_th,I2clist_th, xerr=q2err_th,yerr=I2cerrlist_th, fmt='o', color='#FF9848',
+ecolor='lightblue', elinewidth=3, capsize=0,label='I2c - Theory')
+
+plt.xlabel(r'$q^2$ [GeV$^2$]')
+plt.ylabel(r'$I_{2c}$ ($q^2$)')
+plt.title(r'$I_{2c}$',fontsize=14, color='black')
+plt.legend()
+
+
+
+""""""
+plt.errorbar(centers,I6clist, xerr=q2err,yerr=I6cerrlist, fmt='o', color='#3F7F4C',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I6c - Rapidsim(total geometry)')
+
+
+plt.errorbar(centers_th,I6clist_th, xerr=q2err_th,yerr=I6cerrlist_th, fmt='o', color='#FF9848',
+ecolor='lightblue', elinewidth=3, capsize=0,label='I6c - Theory')
+
+plt.xlabel(r'$q^2$ [GeV$^2$]')
+plt.ylabel(r'$I_{6c}$ ($q^2$)')
+plt.title(r'$I_{6c}$',fontsize=14, color='black')
+plt.legend()
+
+""""""
+plt.errorbar(centers,I8list, xerr=q2err,yerr=I8errlist, fmt='o', color='#3F7F4C',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I8 - Rapidsim(total geometry)')
+
+
+plt.errorbar(centers_th,I8list_th, xerr=q2err_th,yerr=I1cerrlist_th, fmt='o', color='#FF9848',
+ecolor='lightblue', elinewidth=3, capsize=0,label='I8 - Theory')
+
+plt.xlabel(r'$q^2$ [GeV$^2$]')
+plt.ylabel(r'$I_{8}$ ($q^2$)')
+plt.title(r'$I_{8}$',fontsize=14, color='black')
+plt.legend()
+""""""
+plt.errorbar(centers,I9list, xerr=q2err,yerr=I9errlist, fmt='o', color='#3F7F4C',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I9 - Rapidsim(total geometry)')
+
+
+plt.errorbar(centers_th,I9list_th, xerr=q2err_th,yerr=I9errlist_th, fmt='o', color='#FF9848',
+ecolor='lightblue', elinewidth=3, capsize=0,label='I9 - Theory')
+
+plt.xlabel(r'$q^2$ [GeV$^2$]')
+plt.ylabel(r'$I_{9}$ ($q^2$)')
+plt.title(r'$I_{9}$',fontsize=14, color='black')
+plt.legend()
+""""""
+plt.errorbar(centers,I2slist, xerr=q2err,yerr=I2serrlist, fmt='o', color='#3F7F4C',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I2s - Rapidsim(total geometry)')
+
+
+plt.errorbar(centers_th,I2slist_th, xerr=q2err_th,yerr=I2serrlist_th, fmt='o', color='#FF9848',
+ecolor='lightblue', elinewidth=3, capsize=0,label='I2s - Theory')
+
+plt.xlabel(r'$q^2$ [GeV$^2$]')
+plt.ylabel(r'$I_{2s}$ ($q^2$)')
+plt.title(r'$I_{2s}$',fontsize=14, color='black')
+plt.legend()
+""""""
+plt.errorbar(centers,I1slist, xerr=q2err,yerr=I1serrlist, fmt='o', color='#3F7F4C',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I1s - Rapidsim(total geometry)')
+
+
+plt.errorbar(centers_th,I1slist_th, xerr=q2err_th,yerr=I1serrlist_th, fmt='o', color='#FF9848',
+ecolor='lightblue', elinewidth=3, capsize=0,label='I1s - Theory')
+
+plt.xlabel(r'$q^2$ [GeV$^2$]')
+plt.ylabel(r'$I_{1s}$ ($q^2$)')
+plt.title(r'$I_{1s}$',fontsize=14, color='black')
+plt.legend()
+""""""
+plt.errorbar(centers,I6slist, xerr=q2err,yerr=I6serrlist, fmt='o', color='#3F7F4C',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I6s - Rapidsim(total geometry)')
+
+
+plt.errorbar(centers_th,I6slist_th, xerr=q2err_th,yerr=I6serrlist_th, fmt='o', color='#FF9848',
+ecolor='lightblue', elinewidth=3, capsize=0,label='I6s - Theory')
+
+plt.xlabel(r'$q^2$ [GeV$^2$]')
+plt.ylabel(r'$I_{6s}$ ($q^2$)')
+plt.title(r'$I_{6s}$',fontsize=14, color='black')
+plt.legend()
 
 
