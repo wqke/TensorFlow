@@ -117,22 +117,31 @@ for binn in binlist:
   A5list.append(a5)
   A5err.append(a5err)
   a7=(-3/4.)*I7/Gammaq
+  q2err.append((borders[1]-borders[0])/2.)
   if I7!=0:
     a7err=(-3/4.)*a7*np.sqrt((I7err/I7)**2+(Gammaqerr/Gammaq)**2)
     A7err.append(a7err)
   A7list.append(a7)
-  q2err.append((borders[1]-borders[0])/2.)
+  
   
   
   
   ###RAB
-plt.errorbar(centers,RABlist, xerr=q2err,yerr=RABerr, fmt='o', color='black',
-             ecolor='lightgray', elinewidth=3, capsize=0)
+RAB1list=RABlist
+RAB1err=RABerr
+
+plt.fill_between(centers, listm(RAB1list,RAB1err), listp(RAB1list,RAB1err),
+    alpha=0.8, edgecolor='#3F7F4C', facecolor='#7EFF99',
+    linewidth=0,label='calculated with I')
+
+
 def power(x,c,d,e):
   res=c*x**2+d*x+e
   return res
-sol,_=curve_fit(power, centers, RABlist, maxfev=2000)
-plt.plot(np.linspace(3,12,50),power(np.linspace(3,12,50),sol[0],sol[1],sol[2]),color='r',label='parabolic fit')
+
+
+sol,_=curve_fit(power, centers, RAB1list, maxfev=2000)
+plt.plot(np.linspace(3,12,50),power(np.linspace(min(q2_borders),max(q2_borders),50),sol[0],sol[1],sol[2]),color='#3F7F4C')
 plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$R_{AB}$ ($q^2$)')
 plt.title(r'$R_{AB}$',fontsize=14, color='black')
@@ -142,16 +151,19 @@ plt.xlim(3,11)
 plt.grid(linestyle='-', linewidth='0.5', color='gray')
 
 ###RLT
-
-
-plt.errorbar(centers,RLTlist, xerr=q2err,yerr=RLTerr, fmt='o', color='black',
+RLT1list=RLTlist
+RLT1err=RLTerr
+plt.errorbar(centers,RLT1list, xerr=q2err,yerr=RLT1err, fmt='o', color='black',
              ecolor='lightgray', elinewidth=3, capsize=0)
 
+plt.fill_between(centers, listm(RLT1list,RLT1err), listp(RLT1list,RLT1err),
+    alpha=0.8, edgecolor='#3F7F4C', facecolor='#7EFF99',
+    linewidth=0,label='calculated with I')
 def power(x,c,d,e):
         res=c*x**2+d*x+e
         return res
-sol,_=curve_fit(power, centers, RLTlist, maxfev=2000)
-plt.plot(np.linspace(3,12,50),power(np.linspace(3,12,50),sol[0],sol[1],sol[2]),color='r',label='parabolic fit')
+sol,_=curve_fit(power, centers, RLT1list, maxfev=2000)
+plt.plot(np.linspace(min(q2_borders),max(q2_borders),50),power(np.linspace(min(q2_borders),max(q2_borders),50),sol[0],sol[1],sol[2]),color='#3F7F4C')
 plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$R_{L,T}$ ($q^2$)')
 plt.title(r'$R_{L,T}$',fontsize=14, color='black')
@@ -162,15 +174,34 @@ plt.grid(linestyle='-', linewidth='0.5', color='gray')
 
 ###AFB
 
+AFB1list=AFBlist
+AFB1err=AFBerr
+def listm(list1,list2):
+  res=[]
+  for i in range(len(list1)):
+    a=list1[i]-list2[i]
+    res.append(a)
+  return res
+def listp(list1,list2):
+  res=[]
+  for i in range(len(list1)):
+    a=list1[i]+list2[i]
+    res.append(a)
+  return res
 
-plt.errorbar(centers,AFBlist, xerr=q2err,yerr=AFBerr, fmt='o', color='black',
-             ecolor='lightgray', elinewidth=3, capsize=0)
+
 
 def power(x,c,d,e):
         res=c*x**2+d*x+e
         return res
-sol,_=curve_fit(power, centers, AFBlist, maxfev=2000)
-plt.plot(np.linspace(3,12,50),power(np.linspace(3,12,50),sol[0],sol[1],sol[2]),color='r',label='parabolic fit')
+sol,_=curve_fit(power, centers, AFB1list, maxfev=2000)
+plt.plot(np.linspace(min(q2_borders),max(q2_borders),50),power(np.linspace(min(q2_borders),max(q2_borders),50),sol[0],sol[1],sol[2]),color='#3F7F4C')
+plt.fill_between(centers, listm(AFB1list,AFB1err), listp(AFB1list,AFB1err),
+    alpha=0.8, edgecolor='#3F7F4C', facecolor='#7EFF99',
+    linewidth=0,label='calculated with I')
+
+
+
 plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$A_{FB}$ ($q^2$)')
 plt.title(r'$A_{FB}$',fontsize=14, color='black')
@@ -186,7 +217,7 @@ plt.grid(linestyle='-', linewidth='0.5', color='gray')
 plt.errorbar(centers,A6slist, xerr=q2err,yerr=A6serr, fmt='o', color='black',
              ecolor='lightgray', elinewidth=3, capsize=0)
 sol,_=curve_fit(power, centers, A6slist, maxfev=2000)
-plt.plot(np.linspace(3,12,50),power(np.linspace(3,12,50),sol[0],sol[1],sol[2]),color='r',label='parabolic fit')
+plt.plot(np.linspace(min(q2_borders),max(q2_borders),50),np.linspace(min(q2_borders),max(q2_borders),50),sol[0],sol[1],sol[2]),color='r',label='parabolic fit')
 plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$A_{6s}$ ($q^2$)')
 plt.title(r'$A_{6s}$',fontsize=14, color='black')
@@ -197,12 +228,18 @@ plt.grid(linestyle='-', linewidth='0.5', color='gray')
 
 ###A3
 
-
+A31list=A3list
+A31err=A3err
   
-plt.errorbar(centers,A3list, xerr=q2err,yerr=A3err, fmt='o', color='black',
+plt.errorbar(centers,A31list, xerr=q2err,yerr=A31err, fmt='o', color='black',
              ecolor='lightgray', elinewidth=3, capsize=0)
-sol,_=curve_fit(power, centers, A3list, maxfev=2000)
-plt.plot(np.linspace(3,12,50),power(np.linspace(3,12,50),sol[0],sol[1],sol[2]),color='r',label='parabolic fit')
+
+plt.fill_between(centers, listm(A31list,A31err), listp(A31list,A31err),
+    alpha=0.8, edgecolor='#3F7F4C', facecolor='#7EFF99',
+    linewidth=0,label='calculated with I')
+
+sol,_=curve_fit(power, centers, A31list, maxfev=2000)
+plt.plot(np.linspace(min(q2_borders),max(q2_borders),50),power(np.linspace(min(q2_borders),max(q2_borders),50),sol[0],sol[1],sol[2]),color='#3F7F4C')
 plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$A_{3}$ ($q^2$)')
 plt.title(r'$A_{3}$',fontsize=14, color='black')
