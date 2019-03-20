@@ -116,7 +116,18 @@ if __name__ == "__main__" :
   for i,p in zip(init_params, params) : p.update(sess, i)
 
   # Generate sample to fit
-  fit_sample = tfa.RunToyMC( sess, data_model, data_ph, phsp, 100000, 2., chunk = 1000000)
+  
+  
+  # Create normalisation sample (uniform sample in the 3D phase space)
+
+  tree = TChain("DecayTree")
+  tree.Add("/home/ke/pythonap/model_tree_vars.root")
+  branch_names = ["costheta_X_true","costheta_L_true","chi_true"]
+  fit_sample = tree2array(tree,branch_names)
+  fit_sample = rec2array(fit_sample)
+  fit_sample = sess.run(phsp.Filter(fit_sample))
+  fit_sample = sess.run(phsp.Filter(fit_sample))
+  
   fit_hist = MakeHistogram(phsp, fit_sample, binning)
   print fit_hist
   err_hist = np.sqrt(fit_hist + 0.001)
