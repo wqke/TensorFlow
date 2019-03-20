@@ -238,17 +238,48 @@ I6serrlist_th=[(0.11e-16)/(2.0198e-15),0.14/15.044,0.13/11.23,0.1/7.52]
 I2cerrlist_th=[(0.05e-16)/(2.0198e-15),0.06/15.044,0.07/11.23,0.07/7.52]
 I1cerrlist_th=[(0.47e-16)/(2.0198e-15),0.32/15.044,0.23/11.23,0.15/7.52]
 
-#plt.plot(centers,I4list,color='#3F7F4C')  
 q2err=[centers[1]-centers[0],centers[1]-centers[0],centers[1]-centers[0],centers[1]-centers[0]]
-q2err1=[(6.2-min(borders))/2.,0.9,1.3/2.,(max(q2)-8.9)/2.]
-
+q2err_th=[(6.2-min(borders))/2.,0.9,1.3/2.,(max(borders)-8.9)/2.]
+centers_th=[(6.2-min(borders))/2.+min(borders),0.9+6.2,7.6+0.65,8.9+(max(borders)-8.9)/2.]
+""""""
 plt.errorbar(centers,I4list, xerr=q2err,yerr=I4errlist, fmt='o', color='#3F7F4C',
-ecolor='lightgray', elinewidth=3, capsize=0,label='I4 - total')
+ecolor='lightgray', elinewidth=3, capsize=0,label='I4 - Rapidsim(total geometry)')
+
+
+plt.errorbar(centers_th,I4list_th, xerr=q2err_th,yerr=I4errlist_th, fmt='o', color='#FF9848',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I4 - Theory')
 
 plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$I_{4}$ ($q^2$)')
 plt.title(r'$I_4$',fontsize=14, color='black')
 plt.legend()
-plt.xlim(3,11)
 
-'#FF9848'
+""""""
+plt.errorbar(centers,I3list, xerr=q2err,yerr=I3errlist, fmt='o', color='#3F7F4C',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I3 - Rapidsim(total geometry)')
+
+
+plt.errorbar(centers_th,I3list_th, xerr=q2err_th,yerr=I3errlist_th, fmt='o', color='#FF9848',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I3 - Theory')
+
+plt.xlabel(r'$q^2$ [GeV$^2$]')
+plt.ylabel(r'$I_{3}$ ($q^2$)')
+plt.title(r'$I_{3}$',fontsize=14, color='black')
+plt.legend()
+
+
+""""""
+plt.errorbar(centers,I7list, xerr=q2err,yerr=I7errlist, fmt='o', color='#3F7F4C',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I7 - Rapidsim(total geometry)')
+
+
+plt.errorbar(centers_th,I7list_th, xerr=q2err_th,yerr=I7errlist_th, fmt='o', color='#FF9848',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I7 - Theory')
+
+plt.xlabel(r'$q^2$ [GeV$^2$]')
+plt.ylabel(r'$I_{7}$ ($q^2$)')
+plt.title(r'$I_{7}$',fontsize=14, color='black')
+plt.legend()
+
+
+
