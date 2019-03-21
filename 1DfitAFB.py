@@ -17,17 +17,19 @@ if __name__ == "__main__" :
   phsp = tfa.RectangularPhaseSpace( ( (-1, 1), ) )
 
   # Fit parameters of the model 
-  FL  = tfa.FitParameter("FL" ,  0.600,  0.000, 1.000, 0.01)
+  a  = tfa.FitParameter("a" ,  0.500,  -100.000, 100.000, 0.01)
+  b  = tfa.FitParameter("b" ,  0.500,  -100.000, 100.000, 0.01)
+  c  = tfa.FitParameter("c" ,  0.500,  -100.000, 100.000, 0.01)
 
   ### Start of model description
 
   def model(x) : 
     # Get phase space variables
-    cosThetast = phsp.Coordinate(x, 0)
-    sinThetast=tfa.Sqrt(1-cosThetast*cosThetast)
+    cosThetaL = phsp.Coordinate(x, 0)
+    sinThetaL=tfa.Sqrt(1-cosThetaL*cosThetaL)
     # Decay density
-    pdf  = 0.25 * (1.0 - FL ) * sinThetast*sinThetast
-    pdf += 0.5 * FL * cosThetast*cosThetast
+    pdf = a+b*cosThetaL
+    pdf += (1-a-b)*cosThetaL*cosThetaL
     return pdf
 
   ### End of model description
@@ -51,7 +53,7 @@ if __name__ == "__main__" :
   #Total geometry data sample
   tree = TChain("DecayTree")
   tree.Add("/home/ke/calculateI/model_total_new.root")
-  data_sample = tree2array(tree,branches=['costheta_X_true'],selection='q2_true >=5.0738137  & q2_true<6.94456747')
+  data_sample = tree2array(tree,branches=['costheta_L_true'],selection='q2_true >= 3.20305994 & q2_true<5.0738137')
   #array([ 3.20305994,  5.0738137 ,  6.94456747,  8.81532123, 10.686075  ])   borders
   #array([4.13843682, 6.00919059, 7.87994435, 9.75069811])   centers 
   data_sample = rec2array(data_sample)
@@ -77,7 +79,7 @@ if __name__ == "__main__" :
   # Run toy MC corresponding to fitted result
   fit_data = tfa.RunToyMC( sess, model(data_ph), data_ph, phsp, 1000000, majorant, chunk = 1000000)
   f = TFile.Open("toyresult.root", "RECREATE")
-  tfa.FillNTuple("toy", fit_data, ["cosThetast" ])
+  tfa.FillNTuple("toy", fit_data, ["cosThetaL" ])
   f.Close()
 
   # Store timeline profile 
@@ -108,3 +110,11 @@ plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$F_L^{D*}$ ($q^2$)')
 plt.title(r'${D*}$ polarisation fraction',fontsize=14, color='black')
 plt.legend()
+(0.11916753402371288, 0.013976575301229699)
+(2.6462165791940606e-13, 0.00080012618253264)
+
+
+
+
+######
+
