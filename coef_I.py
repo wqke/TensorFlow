@@ -235,7 +235,7 @@ I6serrlist_th=[(0.11e-16)/(2.0198e-15),0.14/15.044,0.13/11.23,0.1/7.52]
 I2cerrlist_th=[(0.05e-16)/(2.0198e-15),0.06/15.044,0.07/11.23,0.07/7.52]
 I1cerrlist_th=[(0.47e-16)/(2.0198e-15),0.32/15.044,0.23/11.23,0.15/7.52]
 
-q2err=[centers[1]-centers[0],centers[1]-centers[0],centers[1]-centers[0],centers[1]-centers[0]]
+q2err=[(centers[1]-centers[0])/2.,(centers[1]-centers[0])/2.,(centers[1]-centers[0])/2.,(centers[1]-centers[0])/2.]
 q2err_th=[(6.2-min(borders))/2.,0.9,1.3/2.,(max(borders)-8.9)/2.]
 centers_th=[(6.2-min(borders))/2.+min(borders),0.9+6.2,7.6+0.65,8.9+(max(borders)-8.9)/2.]
 
@@ -252,6 +252,10 @@ plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$I_{5}$ ($q^2$)')
 plt.title(r'$I_5$',fontsize=14, color='black')
 plt.legend()
+plt.savefig('I5.pdf')
+plt.close()
+plt.close()
+
 
 """"""
 plt.errorbar(centers,I4list, xerr=q2err,yerr=I4errlist, fmt='o', color='#3F7F4C',
@@ -265,6 +269,9 @@ plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$I_{4}$ ($q^2$)')
 plt.title(r'$I_4$',fontsize=14, color='black')
 plt.legend()
+plt.savefig('I4.pdf')
+plt.close()
+plt.close()
 
 """"""
 plt.errorbar(centers,I3list, xerr=q2err,yerr=I3errlist, fmt='o', color='#3F7F4C',
@@ -278,6 +285,9 @@ plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$I_{3}$ ($q^2$)')
 plt.title(r'$I_{3}$',fontsize=14, color='black')
 plt.legend()
+plt.savefig('I3.pdf')
+plt.close()
+plt.close()
 
 
 """"""
@@ -292,6 +302,9 @@ plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$I_{1c}$ ($q^2$)')
 plt.title(r'$I_{1c}$',fontsize=14, color='black')
 plt.legend()
+plt.savefig('I1c.pdf')
+plt.close()
+plt.close()
 
 
 """"""
@@ -307,6 +320,9 @@ plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$I_{2c}$ ($q^2$)')
 plt.title(r'$I_{2c}$',fontsize=14, color='black')
 plt.legend()
+plt.savefig('I2c.pdf')
+plt.close()
+plt.close()
 
 
 
@@ -322,6 +338,9 @@ plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$I_{6c}$ ($q^2$)')
 plt.title(r'$I_{6c}$',fontsize=14, color='black')
 plt.legend()
+plt.savefig('I6c.pdf')
+plt.close()
+plt.close()
 
 """"""
 plt.errorbar(centers,I8list, xerr=q2err,yerr=I8errlist, fmt='o', color='#3F7F4C',
@@ -335,6 +354,10 @@ plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$I_{8}$ ($q^2$)')
 plt.title(r'$I_{8}$',fontsize=14, color='black')
 plt.legend()
+plt.savefig('I8.pdf')
+plt.close()
+plt.close()
+
 """"""
 plt.errorbar(centers,I9list, xerr=q2err,yerr=I9errlist, fmt='o', color='#3F7F4C',
 ecolor='lightgray', elinewidth=3, capsize=0,label='I9 - Rapidsim(total geometry)')
@@ -347,6 +370,10 @@ plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$I_{9}$ ($q^2$)')
 plt.title(r'$I_{9}$',fontsize=14, color='black')
 plt.legend()
+plt.savefig('I9.pdf')
+plt.close()
+plt.close()
+
 """"""
 plt.errorbar(centers,I2slist, xerr=q2err,yerr=I2serrlist, fmt='o', color='#3F7F4C',
 ecolor='lightgray', elinewidth=3, capsize=0,label='I2s - Rapidsim(total geometry)')
@@ -359,6 +386,10 @@ plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$I_{2s}$ ($q^2$)')
 plt.title(r'$I_{2s}$',fontsize=14, color='black')
 plt.legend()
+plt.savefig('I2s.pdf')
+plt.close()
+plt.close()
+
 """"""
 plt.errorbar(centers,I1slist, xerr=q2err,yerr=I1serrlist, fmt='o', color='#3F7F4C',
 ecolor='lightgray', elinewidth=3, capsize=0,label='I1s - Rapidsim(total geometry)')
@@ -371,6 +402,10 @@ plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$I_{1s}$ ($q^2$)')
 plt.title(r'$I_{1s}$',fontsize=14, color='black')
 plt.legend()
+plt.savefig('I1s.pdf')
+plt.close()
+plt.close()
+
 """"""
 plt.errorbar(centers,I6slist, xerr=q2err,yerr=I6serrlist, fmt='o', color='#3F7F4C',
 ecolor='lightgray', elinewidth=3, capsize=0,label='I6s - Rapidsim(total geometry)')
@@ -383,6 +418,24 @@ plt.xlabel(r'$q^2$ [GeV$^2$]')
 plt.ylabel(r'$I_{6s}$ ($q^2$)')
 plt.title(r'$I_{6s}$',fontsize=14, color='black')
 plt.legend()
+plt.savefig('I6s.pdf')
+plt.close()
+plt.close()
+""""""
+plt.errorbar(centers,I7list, xerr=q2err,yerr=I7errlist, fmt='o', color='#3F7F4C',
+ecolor='lightgray', elinewidth=3, capsize=0,label='I7 - Rapidsim(total geometry)')
+
+
+plt.errorbar(centers_th,I7list_th, xerr=q2err_th,yerr=I7errlist_th, fmt='o', color='#FF9848',
+ecolor='lightblue', elinewidth=3, capsize=0,label='I7 - Theory')
+
+plt.xlabel(r'$q^2$ [GeV$^2$]')
+plt.ylabel(r'$I_{7}$ ($q^2$)')
+plt.title(r'$I_{7}$',fontsize=14, color='black')
+plt.legend()
+plt.savefig('I7.pdf')
+plt.close()
+plt.close()
 ###################
 A9=[]
 A9err=[]
@@ -496,3 +549,29 @@ a4=(-2/np.pi)*I4/Gammaq
 a8=(2/np.pi)*I8/Gammaq
 a5=(-3/4.)*I5/Gammaq
 a7=a7=(-3/4.)*I7/Gammaq
+
+
+""""""
+
+def power(x,c,d,e):
+  res=c*x**2+d*x+e
+  return res
+centers=[4.13843682, 6.00919059, 7.87994435, 9.75069811]
+q2_borders=[ 3.20305994,  5.0738137 ,  6.94456747,  8.81532123, 10.686075  ]
+q2err=[(centers[1]-centers[0])/2.,(centers[1]-centers[0])/2.,(centers[1]-centers[0])/2.,(centers[1]-centers[0])/2.]
+plt.errorbar(centers,A7, xerr=q2err,yerr=A7err, fmt='o', color='#3F7F4C',
+ecolor='lightgray', elinewidth=3, capsize=0,label=r'$A_{7}$ - RapidSim')
+sol,_=curve_fit(power, centers, A7, maxfev=2000)
+plt.plot(np.linspace(min(q2_borders),max(q2_borders),50),power(np.linspace(min(q2_borders),max(q2_borders),50),sol[0],sol[1],sol[2]),color='#3F7F4C')
+plt.ylim(-0.04,0.02)
+plt.xlabel(r'$q^2$ [GeV$^2$]')
+plt.ylabel(r'$A_{7}$ ($q^2$)')
+plt.title(r'$A_{7}$ calculated with I',fontsize=14, color='black')
+plt.legend()
+plt.savefig('A7.pdf')
+plt.close()
+plt.close()
+""""""
+
+
+
