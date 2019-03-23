@@ -11,6 +11,49 @@ from scipy.optimize import curve_fit
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm,rc
 
+df=root_pandas.read_root('result_DstTauNu.root',key='data')
+dg=root_pandas.read_root('result_DstTauNu.root',key='fit_result')
+
+bin_heights, bin_borders, _=plt.hist(df['costheta_X_true_new'],density=True)
+bin_centers = bin_borders[:-1] + np.diff(bin_borders) / 2
+plt.close()
+xerr=[(bin_borders[1]-bin_borders[0])/2.]*len(bin_centers)
+plt.errorbar(bin_centers,bin_heights, xerr=xerr, fmt='o', color='black',label='data')
+plt.hist(dg['costheta_X'],label='fit result',color='b',density=True,histtype='step')
+
+plt.legend()
+plt.title(r'cos($\theta_D$) ')
+plt.savefig('costhetast.pdf')
+plt.close()
+plt.close()
+
+bin_heights, bin_borders, _= plt.hist(df['costheta_L'],density=True)
+bin_centers = bin_borders[:-1] + np.diff(bin_borders) / 2
+plt.close()
+xerr=[(bin_borders[1]-bin_borders[0])/2.]*len(bin_centers)
+plt.errorbar(bin_centers,bin_heights, xerr=xerr, fmt='o', color='black',label='data')
+plt.hist(dg['costheta_L'],label='fit result',color='b',density=True,histtype='step')
+
+plt.legend()
+plt.title(r'cos($\theta_L$) ')
+plt.savefig('costhetaL.pdf')
+plt.close()
+plt.close()
+
+
+bin_heights, bin_borders, _=plt.hist(df['chi'],density=True)
+bin_centers = bin_borders[:-1] + np.diff(bin_borders) / 2
+plt.close()
+xerr=[(bin_borders[1]-bin_borders[0])/2.]*len(bin_centers)
+plt.errorbar(bin_centers,bin_heights, xerr=xerr, fmt='o', color='black',label='data')
+plt.hist(dg['chi'],label='fit result',color='b',density=True,histtype='step')
+plt.legend()
+plt.title(r'$\chi$')
+plt.savefig('chi.pdf')
+plt.close()
+plt.close()
+
+
 
 
 borders=[ 3.23624062,  5.09804311,  6.95984559,  8.82164808, 10.68345056]
