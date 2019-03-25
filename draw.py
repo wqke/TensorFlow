@@ -14,7 +14,7 @@ from matplotlib import cm,rc
 df=root_pandas.read_root('result_DstTauNu.root',key='data')
 dg=root_pandas.read_root('result_DstTauNu.root',key='fit_result')
 
-bin_heights, bin_borders, _=plt.hist(df['costheta_X_true_new'],density=True)
+bin_heights, bin_borders, _=plt.hist(df['costheta_X_true'],density=True)
 bin_centers = bin_borders[:-1] + np.diff(bin_borders) / 2
 plt.close()
 xerr=[(bin_borders[1]-bin_borders[0])/2.]*len(bin_centers)
