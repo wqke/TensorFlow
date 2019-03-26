@@ -1,3 +1,18 @@
+# Copyright 2017 CERN for the benefit of the LHCb collaboration
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
+
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
@@ -21,6 +36,17 @@ from ROOT import TFile,TChain,TTree
 if __name__ == "__main__" :
   # Four body angular phase space is described by 3 angles.
   phsp = tfa.RectangularPhaseSpace( ( (-1., 1.), (-1., 1.), (-math.pi, math.pi) ) )
+#Read RapidSim signal sample for either 3pi mode or 3pipi0 mode
+  mode = "Bd2DstTauNu"
+  #3pi or 3pipi0
+  sub_mode = sys.argv[1]
+  #Geometry (all or LHCb)
+  geom = sys.argv[2]
+  #True or reco angles
+  type = sys.argv[3]
+  #Number of events to run on (in k) - 5, 10, 20, 40, 80
+  n = sys.argv[4]
+
   vals = {'I1c':0.78,
             'I1s':0.83,
             'I2c':-0.36,
@@ -106,18 +132,23 @@ if __name__ == "__main__" :
   # Create normalisation sample (uniform sample in the 3D phase space)
   norm_sample = sess.run( phsp.UniformSample(1000000) )
 
+  print "Loading tree"
+  
   tree = TChain("DecayTree")
-
-  tree.Add("/data/lhcb/users/hill/bd2dsttaunu_angular/RapidSim_tuples/Bd2DstTauNu/3pi_all_Total/model_vars.root")
+  tree.Add("/data/lhcb/users/hill/bd2dsttaunu_angular/RapidSim_tuples/Bd2DstTauNu/%s_%s_Total/model_vars_weights.root" % (sub_mode,geom))
   tree.SetBranchStatus("*",0)
   tree.SetBranchStatus("q2_true",1)
-  tree.SetBranchStatus("costheta_D_true",1)
-  tree.SetBranchStatus("costheta_L_true",1)
-  tree.SetBranchStatus("chi_true",1)
-  tree_cut = tree.CopyTree("q2_true >=8.9 && q2_true<12")
-  data_sample = tree2array(tree_cut,branches=['costheta_D_true','costheta_L_true','chi_true'])
+  tree.SetBranchStatus("costheta_D_%s" % type,1)
+  tree.SetBranchStatus("costheta_L_%s" % type,1)
+  tree.SetBranchStatus("chi_%s" % type,1)
+  tree_cut = tree.CopyTree("q2_true >=3.2 && q2_true<12")
+  
+  #Array containing the fit variables
+  print "Creating fit variable array from tree"
+  step = int(float(tree.GetEntries())/(int(n)*1000))
+  data_sample = tree2array(tree_cut,branches=["costheta_D_%s" % type,"costheta_L_%s" % type ,"chi_%s" % type],step=step)
   data_sample = rec2array(data_sample)
-  #array([ 3.20305994, 6.2 , 7.6, 8.9, 10.686075  ])   borders
+  #borders=array([ 3.20305994, 6.2 , 7.6, 8.9, 10.686075  ])   
 
   data_sample = sess.run(phsp.Filter(data_sample))
 
@@ -140,18 +171,15 @@ if __name__ == "__main__" :
 
 
   result = tfa.RunMinuit(sess, nll, { data_ph : data_sample, norm_ph : norm_sample }, options = options, run_metadata = run_metadata, runHesse=True)
-
   print result
-  tfa.WriteFitResults(result, "result.txt")
+  tfa.WriteFitResults(result, "UnbinnedResult/result_%s_%s_%s_%s.txt" % (sub_mode,geom,type,n))
 
   fit_result = tfa.RunToyMC( sess, model(data_ph), data_ph, phsp, 1000000, majorant, chunk = 1000)
-  f = TFile.Open("result_DstTauNu.root", "RECREATE")
-  tfa.FillNTuple("fit_result", fit_result, ["costheta_X", "costheta_L", "chi" ])
-  tfa.FillNTuple("data", data_sample, ["costheta_X_true", "costheta_L", "chi" ])
+  f = TFile.Open("UnbinnedResult/result_DstTauNu.root", "RECREATE")
+  tfa.FillNTuple("fit_result", fit_result, ["costheta_D", "costheta_L", "chi" ])
+  tfa.FillNTuple("data", data_sample, ["costheta_D", "costheta_L", "chi" ])
  # chii=f["chi"]
   f.Close()
-
-
 
   # Store timeline profile
   fetched_timeline = timeline.Timeline(run_metadata.step_stats)
