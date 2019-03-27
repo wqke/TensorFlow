@@ -58,8 +58,12 @@ def result(binned,dec,geom,retrue,num):
     result.append(float(x.split(' ')[1]))
     err.append(float(x.split(' ')[2]))  
   f.close()
+  if binned=='BinnedResult':
+                    res=result[:-1]
+                    for i in range(12):
+                              result[i]=result[i]/sum(res)
+                              err[i]=err[i]/sum(res)
   return result,err
-
 
 ##End of readfile
 def xlist(n):
