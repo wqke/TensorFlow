@@ -31,6 +31,7 @@ import TensorFlowAnalysis as tfa
 from tensorflow.python.client import timeline
 from root_numpy import root2array, rec2array, tree2array
 from ROOT import TFile,TChain,TTree
+from uncertainties import *
 
 
 if __name__ == "__main__" :
@@ -39,6 +40,7 @@ if __name__ == "__main__" :
 #Read RapidSim signal sample for either 3pi mode or 3pipi0 mode
   mode = "Bd2DstTauNu"
   #3pi or 3pipi0
+  #3pi or 3pipi0
   sub_mode = sys.argv[1]
   #Geometry (all or LHCb)
   geom = sys.argv[2]
@@ -46,19 +48,21 @@ if __name__ == "__main__" :
   type = sys.argv[3]
   #Number of events to run on (in k) - 5, 10, 20, 40, 80
   n = sys.argv[4]
-
-  vals = {'I1c':0.78,
-            'I1s':0.83,
-            'I2c':-0.36,
-            'I2s':0.17,
-            'I3': -0.305,
-            'I4':-0.34,
-            'I5': 0.34,
-            'I6c':0.29,
-            'I6s':-0.39,
+  vals = {'I1c':3.03,
+            'I1s':2.04,
+            'I2c':-0.89,
+            'I2s':0.35,
+            'I3': -0.56,
+            'I4':-0.74,
+            'I5': 1.61,
+            'I6c':1.96,
+            'I6s':-1.38,
             'I7': 0.000,
             'I8': 0.000,
             'I9': 0.000}
+
+
+
   tot_rate = 0.
   for v in vals:
     tot_rate += vals[v]
@@ -66,6 +70,7 @@ if __name__ == "__main__" :
   for v in vals:
     vals[v] = vals[v]/tot_rate
   # Fit parameters of the model
+
   I8  = tfa.FitParameter("I8",vals["I8"] ,  -1.000, 1.000)
   I7 = tfa.FitParameter("I7",vals["I7"], -1.000, 1.000)
   I6s  = tfa.FitParameter("I6s",vals["I6s"] ,  -1.000, 1.000)
@@ -116,7 +121,6 @@ if __name__ == "__main__" :
     pdf +=  (1.0 -I1c -I1s -I2c -I2s -I3 -I4-I9 - I6c -I6s - I7 -I8) * coschi * sinThetal  * sin2Thetast
     pdf +=  I7 * sinchi * sinThetal  * sin2Thetast
     return pdf
-
   ### End of model description
 
 
@@ -133,7 +137,7 @@ if __name__ == "__main__" :
   norm_sample = sess.run( phsp.UniformSample(1000000) )
 
   print "Loading tree"
-  
+
   tree = TChain("DecayTree")
   tree.Add("/data/lhcb/users/hill/bd2dsttaunu_angular/RapidSim_tuples/Bd2DstTauNu/%s_%s_Total/model_vars_weights.root" % (sub_mode,geom))
   tree.SetBranchStatus("*",0)
@@ -142,13 +146,13 @@ if __name__ == "__main__" :
   tree.SetBranchStatus("costheta_L_%s" % type,1)
   tree.SetBranchStatus("chi_%s" % type,1)
   tree_cut = tree.CopyTree("q2_true >=3.2 && q2_true<12")
-  
+
   #Array containing the fit variables
   print "Creating fit variable array from tree"
   step = int(float(tree.GetEntries())/(int(n)*1000))
   data_sample = tree2array(tree_cut,branches=["costheta_D_%s" % type,"costheta_L_%s" % type ,"chi_%s" % type],step=step)
   data_sample = rec2array(data_sample)
-  #borders=array([ 3.20305994, 6.2 , 7.6, 8.9, 10.686075  ])   
+  #borders=array([ 3.20305994, 6.2 , 7.6, 8.9, 10.686075  ])
 
   data_sample = sess.run(phsp.Filter(data_sample))
 
@@ -159,7 +163,6 @@ if __name__ == "__main__" :
 
   # TF graph for the PDF integral
   norm = tfa.Integral( model(norm_ph) )
-
   # TF graph for unbinned negalite log likelihood (the quantity to be minimised)
   nll = tfa.UnbinnedNLL( model(data_ph), norm )
 
@@ -170,15 +173,59 @@ if __name__ == "__main__" :
   # Run toy MC corresponding to fitted result
 
 
-  result = tfa.RunMinuit(sess, nll, { data_ph : data_sample, norm_ph : norm_sample }, options = options, run_metadata = run_metadata, runHesse=True)
+  result = tfa.RunMinuit(sess, nll, { data_ph : data_sample, norm_ph : norm_sample }, options = options, run_metadata = run_metadata, runHesse=True)[0]
+  covmat = tfa.RunMinuit(sess, nll, { data_ph : data_sample, norm_ph : norm_sample }, options = options, run_metadata = run_metadata, runHesse=True)[1]
+  #print fit results (the 12 I coefficients)
   print result
-  tfa.WriteFitResults(result, "UnbinnedResult/result_%s_%s_%s_%s.txt" % (sub_mode,geom,type,n))
 
+  tfa.WriteFitResults(result, "/home/ke/TensorFlowAnalysis/UnbinnedResult/result_%s_%s_%s_%s.txt" % (sub_mode,geom,type,n))
+
+
+  i9=result['I9'][0]
+  i8=result['I8'][0]
+  i7=result['I7'][0]
+  i6s=result['I6s'][0]
+  i6c=result['I6c'][0]
+#  i5=result['I5'][0]
+  i4=result['I4'][0]
+  i3=result['I3'][0]
+  i2s=result['I2s'][0]
+  i2c=result['I2c'][0]
+  i1s=result['I1s'][0]
+  i1c=result['I1c'][0]
+  (i8,i7,i6s,i6c,i4,i3,i2s,i2c,i1s,i1c,i9)= correlated_values([i8,i7,i6s,i6c,i4,i3,i2s,i2c,i1s,i1c,i9],covmat)
+  rab=(i1c+2*i1s-3*i2c-6*i2s)/(2*(i1c+2*i1s+i2c+2*i2s))
+  rlt= (3*i1c-i2c)/(2*(3*i1s-i2s))
+  Gammaq=(3*i1c+6*i1s-i2c-2*i1s)/4.
+  afb1=i6c+2*i6s
+  afb=(3/8.)*(afb1/Gammaq)
+  a3=(1/(np.pi*2))*i3/Gammaq
+  a9=(1/(2*np.pi))*i9/Gammaq
+  a6s=(-27/8.)*(i6s/Gammaq)
+  a4=(-2/np.pi)*i4/Gammaq
+  a8=(2/np.pi)*i8/Gammaq
+  a5=(-3/4.)*(1-i8-i7-i9-i4-i3-i2s-i1s-i1c-i2c-i6s-i6c)/Gammaq
+  a7=(-3/4.)*i7/Gammaq
+  para={'RAB':(rab.n,rab.s),'RLT':(rlt.n,rlt.s),'AFB':(afb.n,afb.s),'A6s':(a6s.n,a6s.s),'A3':(a3.n,a3.s),'A9':(a9.n,a9.s),'A4':(a4.n,a4.s),'A8':(a8.n,a8.s),'A5':(a5.n,a5.s),'A7':(a7.n,a7.s)}
+  p = open( "/home/ke/TensorFlowAnalysis/ParamResult/param_%s_%s_%s_%s.txt" % (sub_mode,geom,type,n), "w")
+  slist=['RAB','RLT','AFB','A6s','A3','A9','A4','A8','A5','A7']
+  for s in slist:
+    a=s+" "
+    a += str(para[s][0])
+    a += " "
+    a += str(para[s][1])
+    p.write(a + "\n")
+  p.close()
+
+  print para
+
+# tfa.WriteFitResults(para, "/home/ke/TensorFlowAnalysis/ParamResult/param_%s_%s_%s_%s.txt" % (sub_mode,geom,type,n))
+
+  #Simulation unsing fit results
   fit_result = tfa.RunToyMC( sess, model(data_ph), data_ph, phsp, 1000000, majorant, chunk = 1000)
-  f = TFile.Open("UnbinnedResult/result_DstTauNu.root", "RECREATE")
+  f = TFile.Open("/home/ke/TensorFlowAnalysis/UnbinnedResult/result_DstTauNu.root", "RECREATE")
   tfa.FillNTuple("fit_result", fit_result, ["costheta_D", "costheta_L", "chi" ])
   tfa.FillNTuple("data", data_sample, ["costheta_D", "costheta_L", "chi" ])
- # chii=f["chi"]
   f.Close()
 
   # Store timeline profile
@@ -186,6 +233,5 @@ if __name__ == "__main__" :
   chrome_trace = fetched_timeline.generate_chrome_trace_format()
   with open('timeline.json', 'w') as f:
     f.write(chrome_trace)
-
-
-                                                 
+    
+    
