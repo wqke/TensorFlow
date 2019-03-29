@@ -15,18 +15,7 @@ from matplotlib import cm,rc
 
 #Fedele prediction
 
-vals = {'I1c':3.03,
-          'I1s':2.04,
-          'I2c':-0.89,
-          'I2s':0.35,
-          'I3': -0.56,
-          'I4':-0.74,
-          'I5': 1.61,
-          'I6c':1.96,
-          'I6s':-1.38,
-          'I7': 0.000,
-          'I8': 0.000,
-          'I9': 0.000}
+vals = {'I1c':3.03,'I1s':2.04,'I2c':-0.89,'I2s':0.35,'I3': -0.56,'I4':-0.74,'I5': 1.61,'I6c':1.96,'I6s':-1.38,'I7': 0.000,'I8': 0.000,'I9': 0.000}
 tot_rate = 0.
 for v in vals:
   tot_rate += vals[v]
@@ -41,10 +30,10 @@ Ilist=[I8,I7,I6s,I6c,I4 ,I3 ,I2s ,I2c ,I1s ,I1c ,I9]
 Ierrlist=[I8err,I7err,I6serr,I6cerr,I4err ,I3err ,I2serr ,I2cerr ,I1serr ,I1cerr ,I9]
 
 label1=r"3$\pi$-unbinned-all-true"
-label2=r"3$\pi$-binned-LHCb-true"
-label3=r"3$\pi$-binned-LHCb-reco"
+label2=r"3$\pi$-binned(3D)-LHCb-true"
+label3=r"3$\pi$-binned(3D)-LHCb-reco"
 
-
+/home/dhill/bd2dsttaunu_angular/Fitting/3D_Binned_SignalOnly/results/
 #I6c,3
 
 
