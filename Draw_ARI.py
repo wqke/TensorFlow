@@ -35,22 +35,11 @@ from uncertainties import *
 
 
 if __name__ == "__main__" :
-  # Four body angular phase space is described by 3 angles.
-  phsp = tfa.RectangularPhaseSpace( ( (-1., 1.), (-1., 1.), (-math.pi, math.pi) ) )
-
-  # Placeholders for data and normalisation samples (will be used to compile the model)
-  data_ph = phsp.data_placeholder
-  norm_ph = phsp.norm_placeholder
-
-  binnumber=[1,2,3,4,"total"]
-  cut=["q2_true >=3. && q2_true<6.2","q2_true >=6.2 && q2_true<7.6","q2_true >=7.6 && q2_true<8.9","q2_true >=8.9 && q2_true<12","q2_true >=3. && q2_true<12"]
-  borders=array([ 3.20305994, 6.2 , 7.6, 8.9, 10.686075  ])
-  #Read RapidSim signal sample for either 3pi mode or 3pipi0 mode
-  mode = "Bd2DstTauNu"
-  #3pi or 3pipi0
-  sub_mode = sys.argv[1]
+  #errorbar or curve
+  mode = sys.argv[1]
   #Geometry (all or LHCb)
-  geom = sys.argv[2]
+  geom
+  geom1 = sys.argv[2]
   #True or reco angles
   type = sys.argv[3]
   #Number of events to run on (in k) - 5, 10, 20, 40, 80
