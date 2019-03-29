@@ -34,7 +34,7 @@ label2=r"3$\pi$-binned(3D)-LHCb-true"
 label3=r"3$\pi$-binned(3D)-LHCb-reco"
 
 def shuffle(listI):
-  result=listI
+  result=[0]*11
   result[0]=listI[9] #I8
   result[1]=listI[8] #I7
   result[2]=listI[5] #I6s
@@ -65,7 +65,18 @@ def result(binned,dec,geom,retrue,num):
     return result,err
   if binned=='BinnedResult':
     return shuffle(result),shuffle(err)
+"""
 
+
+>>> l=[1,2,3,4,5,6,7,8,9,10,11]
+>>> shuffle(I)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'I' is not defined
+>>> shuffle(l)
+[10, 9, 6, 5, 8, 7, 5, 6, 9, 10, 11]
+
+"""
 
 ##End of readfile
 def xlist(n):
