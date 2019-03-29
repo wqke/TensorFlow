@@ -12,15 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""
-for val in vals:
-  tot_rate = 0.
-  for v in val:
-    tot_rate += val[v]
-  for v in val:
-    val[v]=val[v]/tot_rate
-"""
-
 
 import matplotlib
 matplotlib.use('Agg')
@@ -54,9 +45,8 @@ if __name__ == "__main__" :
   binnumber=[1,2,3,4]
   cut=["q2_true >=3 && q2_true<6.2","q2_true >=6.2 && q2_true<7.6","q2_true >=7.6 && q2_true<8.9","q2_true >=8.9 && q2_true<12"]
   borders=array([ 3.20305994, 6.2 , 7.6, 8.9, 10.686075  ])
-#Read RapidSim signal sample for either 3pi mode or 3pipi0 mode
+  #Read RapidSim signal sample for either 3pi mode or 3pipi0 mode
   mode = "Bd2DstTauNu"
-  #3pi or 3pipi0
   #3pi or 3pipi0
   sub_mode = sys.argv[1]
   #Geometry (all or LHCb)
