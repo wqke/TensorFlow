@@ -33,13 +33,27 @@ label1=r"3$\pi$-unbinned-all-true"
 label2=r"3$\pi$-binned(3D)-LHCb-true"
 label3=r"3$\pi$-binned(3D)-LHCb-reco"
 
-/home/dhill/bd2dsttaunu_angular/Fitting/3D_Binned_SignalOnly/results/
-#I6c,3
-
+def shuffle(listI):
+  result=listI
+  result[0]=listI[9] #I8
+  result[1]=listI[8] #I7
+  result[2]=listI[5] #I6s
+  result[3]=listI[4] #I6c
+  result[4]=listI[7] #I4
+  result[5]=listI[6] #I3
+  result[6]=listI[3] #I2s
+  result[7]=listI[2] #I2c
+  result[8]=listI[1] #I1s
+  result[9]=listI[0] #I1c
+  result[10]=listI[10] #I9
+  return result
 
 #define readfile 
 def result(binned,dec,geom,retrue,num):
-  f=open("/home/ke/TensorFlowAnalysis/"+binned+"/result_"+dec+"_"+geom+"_"+retrue+"_"+num+".txt", "r")
+  if binned=='UnbinnedResult':
+    f=open("/home/ke/TensorFlowAnalysis/"+binned+"/result_"+dec+"_"+geom+"_"+retrue+"_"+num+'_bintotal'+".txt", "r")
+  if binned=='BinnedResult':
+    f=open("/home/ke/TensorFlowAnalysis/"+binned+"/result_"+dec+"_"+geom+"_"+retrue+"_"+num+".txt", "r")
   lines=f.readlines()
   result=[]
   err=[]
@@ -47,54 +61,47 @@ def result(binned,dec,geom,retrue,num):
     result.append(float(x.split(' ')[1]))
     err.append(float(x.split(' ')[2]))  
   f.close()
+  if binned=='UnbinnedResult':
+    return result,err
   if binned=='BinnedResult':
-                    res=result[:-1]
-                    for i in range(12):
-                              result[i]=result[i]/sum(res)
-                              err[i]=err[i]/sum(res)
-  return result,err
+    return shuffle(result),shuffle(err)
+
 
 ##End of readfile
 def xlist(n):
   return [n*2**(-0.15),n,n*2**(0.15)]
 
-Xrange=[xlist(5)[0],10,20,40,xlist(80)[2]]
+Xrange=[xlist(10)[0],50,xlist(100)[2]]
 
 
 for i in range(11):
-          plt.errorbar([xlist(5)[0],xlist(10)[0],xlist(20)[0],xlist(40)[0],xlist(80)[0]],
-                       [result("UnbinnedResult","3pi","all","true","5")[0][i],result("UnbinnedResult","3pi","all","true","10")[0][i],
-                      result("UnbinnedResult","3pi","all","true","20")[0][i],result("UnbinnedResult","3pi","all","true","40")[0][i],
-                        result("UnbinnedResult","3pi","all","true","80")[0][i]],
-                       yerr=[result("UnbinnedResult","3pi","all","true","5")[1][i],
-                       result("UnbinnedResult","3pi","all","true","10")[1][i],result("UnbinnedResult","3pi","all","true","20")[1][i],
-                       result("UnbinnedResult","3pi","all","true","40")[1][i],result("UnbinnedResult","3pi","all","true","80")[1][i]], fmt='o', color='black',
+          plt.errorbar([xlist(10)[0],xlist(50)[0],xlist(100)[0]],
+                       [result("UnbinnedResult","3pi","all","true","10")[0][i],
+                      result("UnbinnedResult","3pi","all","true","50")[0][i],result("UnbinnedResult","3pi","all","true","100")[0][i]],
+                       yerr=[result("UnbinnedResult","3pi","all","true","10")[1][i],
+                       result("UnbinnedResult","3pi","all","true","50")[1][i],result("UnbinnedResult","3pi","all","true","100")[1][i]], fmt='o', color='black',
           ecolor='#6059f7', elinewidth=3, capsize=0,label=label1)
 
-          plt.errorbar([xlist(5)[1],xlist(10)[1],xlist(20)[1],xlist(40)[1],xlist(80)[1]],
-                       [result("BinnedResult","3pi","LHCb","true","5")[0][i],result("BinnedResult","3pi","LHCb","true","10")[0][i],
-                      result("BinnedResult","3pi","LHCb","true","20")[0][i],result("BinnedResult","3pi","LHCb","true","40")[0][i],
-                        result("BinnedResult","3pi","LHCb","true","80")[0][i]],
-                       yerr=[result("BinnedResult","3pi","LHCb","true","5")[1][i],
-                       result("BinnedResult","3pi","LHCb","true","10")[1][i],result("BinnedResult","3pi","LHCb","true","20")[1][i],
-                       result("BinnedResult","3pi","LHCb","true","40")[1][i],result("BinnedResult","3pi","LHCb","true","80")[1][i]], fmt='o', color='black',
+          plt.errorbar([xlist(10)[1],xlist(50)[1],xlist(100)[1]],
+                       [result("BinnedResult","3pi","LHCb","true","10")[0][i],
+                      result("BinnedResult","3pi","LHCb","true","50")[0][i],result("BinnedResult","3pi","LHCb","true","100")[0][i]],
+                       yerr=[result("BinnedResult","3pi","LHCb","true","10")[1][i],
+                       result("BinnedResult","3pi","LHCb","true","50")[1][i],result("BinnedResult","3pi","LHCb","true","100")[1][i]], fmt='o', color='black',
           ecolor='#f2a026', elinewidth=3, capsize=0,label=label2)
           
-          plt.errorbar([xlist(5)[2],xlist(10)[2],xlist(20)[2],xlist(40)[2],xlist(80)[2]],
-                       [result("BinnedResult","3pi","LHCb","reco","5")[0][i],result("BinnedResult","3pi","LHCb","reco","10")[0][i],
-                      result("BinnedResult","3pi","LHCb","reco","20")[0][i],result("BinnedResult","3pi","LHCb","reco","40")[0][i],
-                        result("BinnedResult","3pi","LHCb","reco","80")[0][i]],
-                       yerr=[result("BinnedResult","3pi","LHCb","reco","5")[1][i],
-                       result("BinnedResult","3pi","LHCb","reco","10")[1][i],result("BinnedResult","3pi","LHCb","reco","20")[1][i],
-                       result("BinnedResult","3pi","LHCb","reco","40")[1][i],result("BinnedResult","3pi","LHCb","reco","80")[1][i]], fmt='o', color='black',
+          plt.errorbar([xlist(10)[2],xlist(50)[2],xlist(100)[2]],
+                       [result("BinnedResult","3pi","LHCb","reco","10")[0][i],
+                      result("BinnedResult","3pi","LHCb","reco","50")[0][i],result("BinnedResult","3pi","LHCb","reco","100")[0][i]],
+                       yerr=[result("BinnedResult","3pi","LHCb","reco","10")[1][i],result("BinnedResult","3pi","LHCb","reco","50")[1][i],
+                       result("BinnedResult","3pi","LHCb","reco","100")[1][i]], fmt='o', color='black',
           ecolor='#960311', elinewidth=3, capsize=0,label=label3)
-          plt.plot(Xrange,[Ilist[i]]*5,linestyle=':')
-          plt.fill_between(Xrange,[Ilist[i]-Ierrlist[i]]*5 ,[Ilist[i]+Ierrlist[i]]*5 ,alpha=0.5,color='lightgray',label='Theory')
+          plt.plot(Xrange,[Ilist[i]]*3,linestyle=':')
+          plt.fill_between(Xrange,[Ilist[i]-Ierrlist[i]]*3,[Ilist[i]+Ierrlist[i]]*3 ,alpha=0.5,color='lightgray',label='Theory')
           plt.title(r"Fit results for "+Iname[i])
           plt.xlabel("N (1000's)")
           plt.ylabel(Iname[i])
           plt.xscale("log",basex=2.0)
-          plt.xticks([5,10,20,40,80],('5','10','20','40','80')) 
+          plt.xticks([10,50,100],('10','50','100')) 
           plt.legend()
           plt.savefig(Iname[i]+'.pdf')
           plt.close()
