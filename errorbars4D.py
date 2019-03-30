@@ -108,6 +108,12 @@ for i in range(11):
           plt.close()
           plt.close()
 
+###############
+#In each bin
+
+
+
+
 
              
 
