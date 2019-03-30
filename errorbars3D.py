@@ -93,9 +93,9 @@ def xlist(n):
 def xlist(n):
   liste=[10,25,50,75,100,150,200]
   ind=liste.index(n)+1
-  return [ind-0.3,ind,ind+0.3]
+  return [ind-0.15,ind,ind+0.15]
 
-Xrange=[xlist(10)[0],25,50,75,100,150,xlist(200)[2]]
+Xrange=[xlist(10)[0],xlist(25)[1],xlist(50)[1],xlist(75)[1],xlist(100)[1],xlist(150)[1],xlist(200)[2]]
 
 
 for i in range(11):
@@ -137,7 +137,7 @@ ecolor='#6059f7', elinewidth=3, capsize=0,label=label1)
   plt.xlabel("N (1000's)")
   plt.ylabel(Iname[i])
   #plt.xscale("log",basex=2.0)
-  plt.xticks([10,25,50,75,100,150,200],('10','25','50','75','100','150','200')) 
+  plt.xticks([1,2,3,4,5,6,7],('10','25','50','75','100','150','200')) 
   plt.legend()
   plt.savefig(Iname[i]+'.pdf')
   plt.close()
