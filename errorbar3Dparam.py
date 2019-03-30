@@ -46,8 +46,8 @@ Ilist=[RAB,RLT,AFB,A6s,A3,A9,A4,A8,A5,A7,I5]
 Ierrlist=[RABerr,RLTerr,AFBerr,A6serr,A3err,A9err,A4err,A8err,A5err,A7err,I5err]
 
 label1=r"3$\pi$-unbinned-all-true"
-label2=r"3$\pi$-binned(3D)-LHCb-true"
-label3=r"3$\pi$-binned(3D)-LHCb-reco"
+label2=r"3$\pi$-binned(4D)-LHCb-true"
+label3=r"3$\pi$-binned(4D)-LHCb-reco"
 
 
 
@@ -74,7 +74,9 @@ def xlist(n):
   return [n*2**(-0.15),n,n*2**(0.15)]
 """
 def xlist(n):
-  return [n-5.,n,n+5.]
+  liste=[10,25,50,75,100,150,200]
+  ind=liste.index(n)+1
+  return [ind-0.3,ind,ind+0.3]
 
 Xrange=[xlist(10)[0],25,50,75,100,150,xlist(200)[2]]
 
