@@ -36,11 +36,6 @@ from root_pandas import *
 if __name__ == "__main__" :
   # Four body angular phase space is described by 3 angles.
   phsp = tfa.RectangularPhaseSpace( ( (-1., 1.), (-1., 1.), (-math.pi, math.pi) ) )
-
-  # Placeholders for data and normalisation samples (will be used to compile the model)
-  data_ph = phsp.data_placeholder
-  norm_ph = phsp.norm_placeholder
-
   binnumber=[1,2,3,4,"total"]
 #  cut=["q2_true >=3. && q2_true<6.2","q2_true >=6.2 && q2_true<7.6","q2_true >=7.6 && q2_true<8.9","q2_true >=8.9 && q2_true<12","q2_true >=3. && q2_true<12"]
   cut=["q2_true >=3. and q2_true<6.2","q2_true >=6.2 and q2_true<7.6","q2_true >=7.6 and q2_true<8.9","q2_true >=8.9 and q2_true<12","q2_true >=3. and q2_true<12"]
@@ -64,16 +59,29 @@ if __name__ == "__main__" :
     i=4
   else :
     i=int(binnum)-1
-  #Initial guesses in each bin (normalised)
-  vals1 = {'I2s': 0.020051490246559067, 'I1s': 0.18071096148133478, 'I2c': -0.07228438459253392, 'I1c': 0.46687790870383206, 'I9': 0.0, 'I8': 0.0, 'I6c': 0.3896425388652342, 'I3': -0.026289731656599664, 'I5': 0.24210317853252794, 'I4': -0.04881671452619071, 'I7': 0.0, 'I6s': -0.15199524705416376}
-  vals2 = {'I2s': 0.051449082690773716, 'I1s': 0.3270406806700345, 'I2c': -0.1475671363998936, 'I1c': 0.5350970486572719, 'I9': 0.0, 'I8': 0.0, 'I6c': 0.3715767083222546, 'I3': -0.0751130018612071, 'I5': 0.30975804307365057, 'I4': -0.11433129486838603, 'I7': 0.0, 'I6s': -0.2579101302844987}
-  vals3 = {'I2s': 0.09171861086375781, 'I1s': 0.5040071237756012, 'I2c': -0.226179875333927, 'I1c': 0.6179875333926982, 'I9': 0.0, 'I8': 0.0, 'I6c': 0.34995547640249336, 'I3': -0.14870881567230634, 'I5': 0.35262689225289406, 'I4': -0.19412288512911846, 'I7': 0.0, 'I6s': -0.34728406055209265}
-  vals4 = {'I2s': 0.1662234042553192, 'I1s': 0.8257978723404258, 'I2c': -0.3617021276595746, 'I1c': 0.7779255319148938, 'I9': 0.0, 'I8': 0.0, 'I6c': 0.29122340425531923, 'I3': -0.3045212765957448, 'I5': 0.3351063829787235, 'I4': -0.33909574468085113, 'I7': 0.0, 'I6s': -0.39095744680851074}
-  val_total={'I2s': 0.06457564575645756, 'I1s': 0.3763837638376384, 'I2c': -0.16420664206642066, 'I1c': 0.559040590405904, 'I9': 0.0, 'I8': 0.0, 'I6c': 0.36162361623616235, 'I3': -0.10332103321033212, 'I5': 0.2970479704797048, 'I4': -0.13653136531365315, 'I7': 0.0, 'I6s': -0.25461254612546125}
-  vals=[vals1,vals2,vals3,vals4,val_total]
 
   # Fit parameters of the model
+  
+#Total rate  = 3 I1c + 6 I1s - I2c - 2 I2s
+  rate = tfa.FitParameter("rate", 1.0)
+  
+  # Fit parameters
+  #I1c = tfa.FitParameter("I1c" , 0.57, -1, 1, 0.01)
+  #I1c = (rate - 6 I1s + I2c + 2I2s)/3.
+  I1s = tfa.FitParameter("I1s" , 0.43, -1, 1, 0.01)
+  I2c = tfa.FitParameter("I2c" , -0.17, -1, 1, 0.01)
+  I2s = tfa.FitParameter("I2s" , 0.07, -1, 1, 0.01)
+  I6c = tfa.FitParameter("I6c" , 0.35, -1, 1, 0.01)
+  I6s = tfa.FitParameter("I6s" , -0.27, -1, 1, 0.01)
+  I3  = tfa.FitParameter("I3"  , -0.13, -1, 1, 0.01)
+  I4  = tfa.FitParameter("I4"  , -0.15, -1, 1, 0.01)
+  I5  = tfa.FitParameter("I5"  , 0.30, -1, 1, 0.01)
+  I7  = tfa.FitParameter("I7"  , 0., -1, 1, 0.01)
+  I8  = tfa.FitParameter("I8"  , 0., -1, 1, 0.01)
+  I9  = tfa.FitParameter("I9"  , 0., -1, 1, 0.01)
 
+  
+  """
   I8  = tfa.FitParameter("I8",vals[i]["I8"] ,  -1.000, 1.000)
   I7 = tfa.FitParameter("I7",vals[i]["I7"], -1.000, 1.000)
   I6s  = tfa.FitParameter("I6s",vals[i]["I6s"] ,  -1.000, 1.000)
@@ -85,11 +93,16 @@ if __name__ == "__main__" :
   I1s  = tfa.FitParameter("I1s",vals[i]["I1s"] , -1.000, 1.000)
   I1c = tfa.FitParameter("I1c",vals[i]["I1c"], -1.000, 1.000)
   I9 = tfa.FitParameter("I9",vals[i]["I9"], -1.000, 1.000)
-  ### Start of model description
+ """
+ ### Start of model description
   def model(x) :
     # Get phase space variables
     cosThetast = phsp.Coordinate(x, 0)     #D* angle costhetast
     cosThetal = phsp.Coordinate(x, 1)  #Lepton angle costhetal
+    chi = phsp.Coordinate(x, 2)
+    #Derived quantities
+    sinThetast = tfa.Sqrt( 1.0 - cosThetast * cosThetast )
+    sinThetal = tfa.Sqrt( 1.0 - cosThetal * cosThetal )
     sinTheta2st =  (1.0 - cosThetast * cosThetast)
     sinTheta2l =  (1.0 - cosThetal * cosThetal)
     sin2Thetast = (2.0 * sinThetast * cosThetast)
@@ -98,8 +111,9 @@ if __name__ == "__main__" :
     sinchi=tf.sin(chi)
     cos2chi=2*coschi*coschi-1
     sin2chi=2*sinchi*coschi
+
     # Decay density
-    pdf  =  I1c* cosThetast*cosThetast
+    pdf  =  (1.0/3.0)*(rate - 6*I1s + I2c + 2*I2s)* cosThetast*cosThetast
     pdf += I1s * sinTheta2st
     pdf +=  I2c * cosThetast*cosThetast*cos2Thetal
     pdf +=  I2s * sinTheta2st *  cos2Thetal
@@ -109,11 +123,14 @@ if __name__ == "__main__" :
     pdf +=I9 * sin2chi * sinThetal * sinThetal * sinThetast * sinThetast
     pdf += I4 * coschi * 2.0 * sinThetal * cosThetal * sin2Thetast
     pdf += I8 * sinchi * 2.0 * sinThetal * cosThetal * sin2Thetast
-    pdf +=  (1.0 -I1c -I1s -I2c -I2s -I3 -I4-I9 - I6c -I6s - I7 -I8) * coschi * sinThetal  * sin2Thetast
+    pdf +=  I5 * coschi * sinThetal  * sin2Thetast
     pdf +=  I7 * sinchi * sinThetal  * sin2Thetast
     return pdf
   ### End of model description
 
+  # Placeholders for data and normalisation samples (will be used to compile the model)
+  data_ph = phsp.data_placeholder
+  norm_ph = phsp.norm_placeholder
   # TF initialiser
   init = tf.global_variables_initializer()
   sess = tf.Session()
@@ -131,6 +148,9 @@ if __name__ == "__main__" :
   data_sample_fit = data_sample_fit.sample(n=int(num_sig)*1000,random_state=42)
   #Convert to ndarray
   data_sample= data_sample_fit.values
+  
+  
+  data_sample = sess.run(phsp.Filter(data_sample))
   # Estimate the maximum of PDF for toy MC generation using accept-reject method
   majorant = tfa.EstimateMaximum(sess, model(data_ph), data_ph, norm_sample )*1.1
   print "Maximum = ", majorant
@@ -150,6 +170,7 @@ if __name__ == "__main__" :
   #print fit results (the 12 I coefficients)
   print 'RESULT IN BIN ',binnumber[i],': ',result
 
+  rate1=result['rate'][0]
   i9=result['I9'][0]
   i8=result['I8'][0]
   i7=result['I7'][0]
@@ -160,23 +181,25 @@ if __name__ == "__main__" :
   i2s=result['I2s'][0]
   i2c=result['I2c'][0]
   i1s=result['I1s'][0]
-  i1c=result['I1c'][0]
-  (i8,i7,i6s,i6c,i4,i3,i2s,i2c,i1s,i1c,i9)= correlated_values([i8,i7,i6s,i6c,i4,i3,i2s,i2c,i1s,i1c,i9],covmat)
-  i5=1-i8-i6s-i6c-i4-i3-i2s-i2c-i1s-i1c-i9
-  rab=(i1c+2*i1s-3*i2c-6*i2s)/(2*(i1c+2*i1s+i2c+2*i2s))
-  rlt= (3*i1c-i2c)/(2*(3*i1s-i2s))
+  i5=result['I5'][0]
+  #i1c=result['I1c'][0]
+  
+  (rate1,i1s,i2c,i2s,i6c,i6s,i3,i4,i5,i7,i8,i9)= correlated_values([rate1,i1s,i2c,i2s,i6c,i6s,i3,i4,i5,i7,i8,i9],covmat)
+  i1c=(1.0/3.0)*(rate1 - 6.*i1s + i2c + 2.*i2s)
+  rab=((1.0/3.0)*(rate1 - 6.*i1s + i2c + 2.*i2s)+2*i1s-3*i2c-6*i2s)/(2*((1.0/3.0)*(rate1 - 6.*i1s + i2c + 2.*i2s)+2*i1s+i2c+2*i2s))
+  rlt= ((rate - 6.*i1s + i2c + 2.*i2s)-i2c)/(2*(3*i1s-i2s))
   Gammaq=(3*i1c+6*i1s-i2c-2*i1s)/4.
   afb1=i6c+2*i6s
   afb=(3/8.)*(afb1/Gammaq)
   a3=(1/(np.pi*2))*i3/Gammaq
-  a9=(1/(2*np.pi))*i9/Gammaq
+  a9=(1/(2*np.pi))*i9/Gammaq  
   a6s=(-27/8.)*(i6s/Gammaq)
-   a4=(-2/np.pi)*i4/Gammaq
+  a4=(-2/np.pi)*i4/Gammaq
   a8=(2/np.pi)*i8/Gammaq
-  a5=(-3/4.)*(1-i8-i7-i9-i4-i3-i2s-i1s-i1c-i2c-i6s-i6c)/Gammaq
+  a5=(-3/4.)*i5/Gammaq
   a7=(-3/4.)*i7/Gammaq
  # fl=(9*i1c-3*i2c)/(3*i1c+6*i1s-i2c-2*i1s)
-  para={'RAB':(rab.n,rab.s),'RLT':(rlt.n,rlt.s),'AFB':(afb.n,afb.s),'A6s':(a6s.n,a6s.s),'A3':(a3.n,a3.s),'A9':(a9.n,a9.s),'A4':(a4.n,a4.s),'A8':(a8.n,a8.s),'A5':(a5.n,a5.s),'A7':(a7.n,a7.s),'I5':(i5.n,i5.s)}
+  para={'RAB':(rab.n,rab.s),'RLT':(rlt.n,rlt.s),'AFB':(afb.n,afb.s),'A6s':(a6s.n,a6s.s),'A3':(a3.n,a3.s),'A9':(a9.n,a9.s),'A4':(a4.n,a4.s),'A8':(a8.n,a8.s),'A5':(a5.n,a5.s),'A7':(a7.n,a7.s),'I1c':(i1c.n,i1c.s)}
 
   p = open( "/home/ke/TensorFlowAnalysis/ParamResult/param_%s_%s_%s_%s_bin%s.txt" % (sub_mode,geom,type,n,binnumber[i]), "w")
   slist=['RAB','RLT','AFB','A6s','A3','A9','A4','A8','A5','A7','I5']
