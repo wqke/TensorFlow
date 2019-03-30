@@ -30,8 +30,8 @@ Ilist=[I8,I7,I6s,I6c,I4 ,I3 ,I2s ,I2c ,I1s ,I1c ,I9]
 Ierrlist=[I8err,I7err,I6serr,I6cerr,I4err ,I3err ,I2serr ,I2cerr ,I1serr ,I1cerr ,I9]
 
 label1=r"3$\pi$-unbinned-all-true"
-label2=r"3$\pi$-binned(3D)-LHCb-true"
-label3=r"3$\pi$-binned(3D)-LHCb-reco"
+label2=r"3$\pi$-binned(4D)-LHCb-true"
+label3=r"3$\pi$-binned(4D)-LHCb-reco"
 
 def shuffle(listI):
   result=[0]*11
@@ -66,15 +66,34 @@ def result(binned,dec,geom,retrue,num):
   if binned=='BinnedResult':
     return shuffle(result),shuffle(err)
 
-
+"""
 ##End of readfile
+  tree = TChain("DecayTree")
+  tree.Add(in_file)
+  tree.SetBranchStatus("*",0)
+  tree.SetBranchStatus("q2_true",1)
+  tree.SetBranchStatus("costheta_D_%s" % type,1)
+  tree.SetBranchStatus("costheta_L_%s" % type,1)
+  tree.SetBranchStatus("chi_%s" % type,1)
+  tree_cut = tree.CopyTree(cut[i])
+  #Array containing the fit variables
+  print "Creating fit variable array from tree"
+
+  data_sample = tree2array(tree_cut,branches=["costheta_D_%s" % type,"costheta_L_%s" % type ,"chi_%s" % type])#,step=step)
+  data_sample = rec2array(data_sample)
+  
+ 
+  data_sample = sess.run(phsp.Filter(data_sample))
+"""
 
 """
 def xlist(n):
   return [n*2**(-0.15),n,n*2**(0.15)]
 """
 def xlist(n):
-  return [n-5.,n,n+5.]
+  liste=[10,25,50,75,100,150,200]
+  ind=liste.index(n)+1
+  return [ind-0.3,ind,ind+0.3]
 
 Xrange=[xlist(10)[0],25,50,75,100,150,xlist(200)[2]]
 
