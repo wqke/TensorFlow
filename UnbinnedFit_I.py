@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
@@ -32,7 +31,7 @@ from tensorflow.python.client import timeline
 from root_numpy import root2array, rec2array, tree2array
 from ROOT import TFile,TChain,TTree
 from uncertainties import *
-
+from root_pandas import *
 
 if __name__ == "__main__" :
   # Four body angular phase space is described by 3 angles.
@@ -43,7 +42,10 @@ if __name__ == "__main__" :
   norm_ph = phsp.norm_placeholder
 
   binnumber=[1,2,3,4,"total"]
-  cut=["q2_true >=3. && q2_true<6.2","q2_true >=6.2 && q2_true<7.6","q2_true >=7.6 && q2_true<8.9","q2_true >=8.9 && q2_true<12","q2_true >=3. && q2_true<12"]
+#  cut=["q2_true >=3. && q2_true<6.2","q2_true >=6.2 && q2_true<7.6","q2_true >=7.6 && q2_true<8.9","q2_true >=8.9 && q2_true<12","q2_true >=3. && q2_true<12"]
+  cut=["q2_true >=3. and q2_true<6.2","q2_true >=6.2 and q2_true<7.6","q2_true >=7.6 and q2_true<8.9","q2_true >=8.9 and q2_true<12","q2_true >=3. and q2_true<12"]
+
+
   borders=array([ 3.20305994, 6.2 , 7.6, 8.9, 10.686075  ])
   #Read RapidSim signal sample for either 3pi mode or 3pipi0 mode
   mode = "Bd2DstTauNu"
@@ -54,12 +56,13 @@ if __name__ == "__main__" :
   #True or reco angles
   type = sys.argv[3]
   #Number of events to run on (in k) - 5, 10, 20, 40, 80
-  n = sys.argv[4]
+  num_sig = sys.argv[4]
+  n=num_sig
   #The bin number - 1,2,3, 4 or total
   binnum = sys.argv[5]
   if binnum=="total":
     i=4
-  else :  
+  else :
     i=int(binnum)-1
   #Initial guesses in each bin (normalised)
   vals1 = {'I2s': 0.020051490246559067, 'I1s': 0.18071096148133478, 'I2c': -0.07228438459253392, 'I1c': 0.46687790870383206, 'I9': 0.0, 'I8': 0.0, 'I6c': 0.3896425388652342, 'I3': -0.026289731656599664, 'I5': 0.24210317853252794, 'I4': -0.04881671452619071, 'I7': 0.0, 'I6s': -0.15199524705416376}
@@ -87,10 +90,6 @@ if __name__ == "__main__" :
     # Get phase space variables
     cosThetast = phsp.Coordinate(x, 0)     #D* angle costhetast
     cosThetal = phsp.Coordinate(x, 1)  #Lepton angle costhetal
-    chi = phsp.Coordinate(x, 2)
-    # Derived quantities
-    sinThetast = tfa.Sqrt( 1.0 - cosThetast * cosThetast )
-    sinThetal = tfa.Sqrt( 1.0 - cosThetal * cosThetal )
     sinTheta2st =  (1.0 - cosThetast * cosThetast)
     sinTheta2l =  (1.0 - cosThetal * cosThetal)
     sin2Thetast = (2.0 * sinThetast * cosThetast)
@@ -124,21 +123,14 @@ if __name__ == "__main__" :
   norm_sample = sess.run( phsp.UniformSample(1000000) )
 
   print "Loading tree"
-
-  tree = TChain("DecayTree")
-  tree.Add("/data/lhcb/users/hill/bd2dsttaunu_angular/RapidSim_tuples/Bd2DstTauNu/%s_%s_Total/model_vars_weights.root" % (sub_mode,geom))
-  tree.SetBranchStatus("*",0)
-  tree.SetBranchStatus("q2_true",1)
-  tree.SetBranchStatus("costheta_D_%s" % type,1)
-  tree.SetBranchStatus("costheta_L_%s" % type,1)
-  tree.SetBranchStatus("chi_%s" % type,1)
-  tree_cut = tree.CopyTree(cut[i])
-  #Array containing the fit variables
-  print "Creating fit variable array from tree"
-  step = int(float(tree.GetEntries())/(int(n)*1000))
-  data_sample = tree2array(tree_cut,branches=["costheta_D_%s" % type,"costheta_L_%s" % type ,"chi_%s" % type],step=step)
-  data_sample = rec2array(data_sample)
-  data_sample = sess.run(phsp.Filter(data_sample))
+  in_file = "/data/lhcb/users/hill/bd2dsttaunu_angular/RapidSim_tuples/Bd2DstTauNu/%s_%s_Total/model_vars_weights.root" % (sub_mode,geom)
+  branch_names = ["costheta_D_%s" % type, "costheta_L_%s" % type, "chi_%s" % type]
+  data_sample_fit = read_root(in_file,"DecayTree",columns=["costheta_D_%s" % type,"costheta_L_%s" % type ,"chi_%s" % type,'q2_true'])
+  data_sample_fit = data_sample_fit.query(cut[i])
+  data_sample_fit = data_sample_fit[branch_names]
+  data_sample_fit = data_sample_fit.sample(n=int(num_sig)*1000,random_state=42)
+  #Convert to ndarray
+  data_sample= data_sample_fit.values
   # Estimate the maximum of PDF for toy MC generation using accept-reject method
   majorant = tfa.EstimateMaximum(sess, model(data_ph), data_ph, norm_sample )*1.1
   print "Maximum = ", majorant
@@ -153,8 +145,8 @@ if __name__ == "__main__" :
   # Run MINUIT minimisation of the neg. log likelihood
   # Run toy MC corresponding to fitted result
 
-  result = tfa.RunMinuit(sess, nll, { data_ph : data_sample, norm_ph : norm_sample }, options = options, run_metadata = run_metadata, runHesse=True)[0]
-  covmat = tfa.RunMinuit(sess, nll, { data_ph : data_sample, norm_ph : norm_sample }, options = options, run_metadata = run_metadata, runHesse=True)[1]  
+  result,covmat = tfa.RunMinuit(sess, nll, { data_ph : data_sample, norm_ph : norm_sample }, options = options, run_metadata = run_metadata, runHesse=True)
+
   #print fit results (the 12 I coefficients)
   print 'RESULT IN BIN ',binnumber[i],': ',result
 
@@ -179,13 +171,15 @@ if __name__ == "__main__" :
   a3=(1/(np.pi*2))*i3/Gammaq
   a9=(1/(2*np.pi))*i9/Gammaq
   a6s=(-27/8.)*(i6s/Gammaq)
-  a4=(-2/np.pi)*i4/Gammaq
+   a4=(-2/np.pi)*i4/Gammaq
   a8=(2/np.pi)*i8/Gammaq
   a5=(-3/4.)*(1-i8-i7-i9-i4-i3-i2s-i1s-i1c-i2c-i6s-i6c)/Gammaq
   a7=(-3/4.)*i7/Gammaq
-  para={'RAB':(rab.n,rab.s),'RLT':(rlt.n,rlt.s),'AFB':(afb.n,afb.s),'A6s':(a6s.n,a6s.s),'A3':(a3.n,a3.s),'A9':(a9.n,a9.s),'A4':(a4.n,a4.s),'A8':(a8.n,a8.s),'A5':(a5.n,a5.s),'A7':(a7.n,a7.s)}
+ # fl=(9*i1c-3*i2c)/(3*i1c+6*i1s-i2c-2*i1s)
+  para={'RAB':(rab.n,rab.s),'RLT':(rlt.n,rlt.s),'AFB':(afb.n,afb.s),'A6s':(a6s.n,a6s.s),'A3':(a3.n,a3.s),'A9':(a9.n,a9.s),'A4':(a4.n,a4.s),'A8':(a8.n,a8.s),'A5':(a5.n,a5.s),'A7':(a7.n,a7.s),'I5':(i5.n,i5.s)}
+
   p = open( "/home/ke/TensorFlowAnalysis/ParamResult/param_%s_%s_%s_%s_bin%s.txt" % (sub_mode,geom,type,n,binnumber[i]), "w")
-  slist=['RAB','RLT','AFB','A6s','A3','A9','A4','A8','A5','A7']
+  slist=['RAB','RLT','AFB','A6s','A3','A9','A4','A8','A5','A7','I5']
   for s in slist:
     a=s+" "
     a += str(para[s][0])
@@ -210,3 +204,5 @@ if __name__ == "__main__" :
     f.write(chrome_trace)
 
 
+
+                                                  
