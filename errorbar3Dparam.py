@@ -33,37 +33,61 @@ for v in val:
 for v in val:
   val[v] = val[v]/tot_rate
   
-Iname=["RAB","RLT","AFB","A6s","A3","A9","A4","A8","A5","A7","I5"]
+Iname=["RAB","RLT","AFB","A6s","A3","A9","A4","A8","A5","A7","I1c"]
 
-[RAB,RLT,AFB,A6s,A3,A9,A4,A8,A5,A7,I5]=[0.5549132947976879,0.8648180242634314,-0.06615214994487321,1.0270121278941566,-0.019653091098447942,0.,
-                                        0.10388062437751054,0.,-0.26626240352811464,0.,val["I5"]]
-[RABerr,RLTerr,AFBerr,A6serr,A3err,A9err,A4err,A8err,A5err,A7err,I5err]=[0.0062529608287506065,0.025602667902659606,
+[RAB,RLT,AFB,A6s,A3,A9,A4,A8,A5,A7,I1c]=[0.5549132947976879,0.8648180242634314,-0.06615214994487321,1.0270121278941566,-0.019653091098447942,0.,
+                                        0.10388062437751054,0.,-0.26626240352811464,0.,val["I1c"]]
+[RABerr,RLTerr,AFBerr,A6serr,A3err,A9err,A4err,A8err,A5err,A7err,I1cerr]=[0.0062529608287506065,0.025602667902659606,
                                                                          0.009427987350140766,
                                                                          0.03054962092295636,0.0004794192172993514,
                                                                          0.,0.0024274130560811504,0.,0.,0.03213740467719109,
-                                                                         0.06/tot_rate]
-Ilist=[RAB,RLT,AFB,A6s,A3,A9,A4,A8,A5,A7,I5]
-Ierrlist=[RABerr,RLTerr,AFBerr,A6serr,A3err,A9err,A4err,A8err,A5err,A7err,I5err]
+                                                                         0.12/tot_rate]
+Ilist=[RAB,RLT,AFB,A6s,A3,A9,A4,A8,A5,A7,I1c]
+Ierrlist=[RABerr,RLTerr,AFBerr,A6serr,A3err,A9err,A4err,A8err,A5err,A7err,I1cerr]
 
 label1=r"3$\pi$-unbinned-all-true"
 label2=r"3$\pi$-binned(4D)-LHCb-true"
 label3=r"3$\pi$-binned(4D)-LHCb-reco"
 
 
-
 #define readfile 
 def result(binned,dec,geom,retrue,num):
-  if binned=='UnbinnedResult':
-    f=open("/home/ke/TensorFlowAnalysis/"+"ParamResult"+"/param_"+dec+"_"+geom+"_"+retrue+"_"+num+'_bintotal'+".txt", "r")
-  if binned=='BinnedResult':
-    f=open("/home/ke/TensorFlowAnalysis/"+binned+"/param_"+dec+"_"+geom+"_"+retrue+"_"+num+".txt", "r")
-  lines=f.readlines()
   result=[]
   err=[]
-  for x in lines:
-    result.append(float(x.split(' ')[1]))
-    err.append(float(x.split(' ')[2]))  
-  f.close()
+  result1=[]
+  err1=[]
+  if binned=='UnbinnedResult':
+    f=open("/home/ke/TensorFlowAnalysis/"+"ParamResult"+"/param_"+dec+"_"+geom+"_"+retrue+"_"+num+'_bintotal'+".txt", "r")
+    linesf=f.readlines()  #the parameters
+    f.close()
+    g=open("/home/ke/TensorFlowAnalysis/"+"UnbinnedResult"+"/result_"+dec+"_"+geom+"_"+retrue+"_"+num+'_bintotal'+".txt", "r")
+    linesg=g.readlines()
+    g.close()
+    for x in linesf:
+      result.append(float(x.split(' ')[1]))
+      err.append(float(x.split(' ')[2]))  
+    for x in linesg:
+      result1.append(float(x.split(' ')[1]))
+      err1.append(float(x.split(' ')[2]))  
+    total_unbin=sum(result1[:-1])+result[-1]
+    result[-1]=result[-1]/total_unbin
+    err[-1]=err[-1]/total_unbin
+  if binned=='BinnedResult':
+    f=open("/home/ke/TensorFlowAnalysis/"+binned+"/param_"+dec+"_"+geom+"_"+retrue+"_"+num+".txt", "r")
+    linesf=f.readlines()  #the parameters
+    f.close()
+    g=open("/home/ke/TensorFlowAnalysis/"+binned+"/result_"+dec+"_"+geom+"_"+retrue+"_"+num+".txt", "r")
+    linesg=g.readlines() 
+    g.close()
+    for x in linesf:
+      result.append(float(x.split(' ')[1]))
+      err.append(float(x.split(' ')[2]))  
+    for x in linesg:
+      result1.append(float(x.split(' ')[1]))
+      err1.append(float(x.split(' ')[2]))  
+    total_bin=sum(result1[1:-1])+result[-1]
+    result[-1]=result[-1]/total_bin
+    err[-1]=err[-1]/total_bin
   return result,err
 
 
