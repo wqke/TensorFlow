@@ -23,49 +23,70 @@ for v in vals:
 for v in vals:
   vals[v] = vals[v]/tot_rate
 
-Iname=["I8","I7","I6s","I6c","I4" ,"I3" ,"I2s" ,"I2c" ,"I1s" ,"I1c" ,"I9"]
-[I8,I7,I6s,I6c,I4 ,I3 ,I2s ,I2c ,I1s ,I1c ,I9]=[vals["I8"],vals["I7"],vals["I6s"],vals["I6c"],vals["I4"] ,vals["I3"] ,vals["I2s"] ,vals["I2c"] ,vals["I1s"] ,vals["I1c"] ,vals["I9"]]
-[I8err,I7err,I6serr,I6cerr,I4err ,I3err ,I2serr ,I2cerr ,I1serr ,I1cerr ,I9]=[0/tot_rate,0/tot_rate,0.05/tot_rate,0.12/tot_rate,0.019/tot_rate,0.014/tot_rate,0.009/tot_rate,0.024/tot_rate,0.05/tot_rate,0.12/tot_rate,0/tot_rate]
-Ilist=[I8,I7,I6s,I6c,I4 ,I3 ,I2s ,I2c ,I1s ,I1c ,I9]
-Ierrlist=[I8err,I7err,I6serr,I6cerr,I4err ,I3err ,I2serr ,I2cerr ,I1serr ,I1cerr ,I9]
+Iname=["I1s","I2c","I2s","I6c","I6s" ,"I3" ,"I4" ,"I5" ,"I7" ,"I8" ,"I9"]
+[I1s,I2c,I2s,I6c,I6s ,I3 ,I4 ,I5 ,I7 ,I8 ,I9]=[vals["I1s"],vals["I2c"],vals["I2s"],vals["I6c"],vals["I6s"] ,vals["I3"] ,vals["I4"] ,vals["I5"] ,vals["I7"] ,vals["I8"] ,vals["I9"]]
+[I1serr,I2cerr,I2serr,I6cerr,I6serr ,I3err ,I4err ,I5err ,I7err ,I8err ,I9err]=[0.05/tot_rate,0.024/tot_rate,0.009/tot_rate,0.12/tot_rate,0.05/tot_rate,0.014/tot_rate,0.019/tot_rate,0.06/tot_rate,0/tot_rate,0/tot_rate,0/tot_rate]
+
+Ilist=[I1s,I2c,I2s,I6c,I6s ,I3 ,I4 ,I5 ,I7 ,I8 ,I9]
+Ierrlist=[I1serr,I2cerr,I2serr,I6cerr,I6serr ,I3err ,I4err ,I5err ,I7err ,I8err ,I9err]
 
 label1=r"3$\pi$-unbinned-all-true"
 label2=r"3$\pi$-binned(4D)-LHCb-true"
 label3=r"3$\pi$-binned(4D)-LHCb-reco"
 
-def shuffle(listI):
-  result=[0]*11
-  result[0]=listI[9] #I8
-  result[1]=listI[8] #I7
-  result[2]=listI[5] #I6s
-  result[3]=listI[4] #I6c
-  result[4]=listI[7] #I4
-  result[5]=listI[6] #I3
-  result[6]=listI[3] #I2s
-  result[7]=listI[2] #I2c
-  result[8]=listI[1] #I1s
-  result[9]=listI[0] #I1c
-  result[10]=listI[10] #I9
-  return result
 
 #define readfile 
 def result(binned,dec,geom,retrue,num):
-  if binned=='UnbinnedResult':
-    f=open("/home/ke/TensorFlowAnalysis/"+binned+"/result_"+dec+"_"+geom+"_"+retrue+"_"+num+'_bintotal'+".txt", "r")
-  if binned=='BinnedResult':
-    f=open("/home/ke/TensorFlowAnalysis/"+binned+"/result_"+dec+"_"+geom+"_"+retrue+"_"+num+".txt", "r")
-  lines=f.readlines()
   result=[]
   err=[]
-  for x in lines:
-    result.append(float(x.split(' ')[1]))
-    err.append(float(x.split(' ')[2]))  
-  f.close()
+  result1=[]
+  err1=[]
   if binned=='UnbinnedResult':
-    return result,err
-  if binned=='BinnedResult':
-    return shuffle(result),shuffle(err)
+    f=open("/home/ke/TensorFlowAnalysis/"+binned+"/result_"+dec+"_"+geom+"_"+retrue+"_"+num+'_bintotal'+".txt", "r")
+    linesf=f.readlines()  #I
+    f.close()
+    g=open("/home/ke/TensorFlowAnalysis/"+"ParamResult"+"/param_"+dec+"_"+geom+"_"+retrue+"_"+num+'_bintotal'+".txt", "r")
+    linesg=g.readlines()   #Parameters
+    g.close()
 
+    for x in linesf:
+      result.append(float(x.split(' ')[1]))
+      err.append(float(x.split(' ')[2]))  
+    
+    for x in linesg:
+      result1.append(float(x.split(' ')[1]))
+      err1.append(float(x.split(' ')[2]))  
+    
+    total_unbin=sum(result[:-1])+result1[-1]
+    for i in range(len(result)):
+      result[i]=result[i]/total_unbin
+    for i in range(len(err)):
+      err[i]=err[i]/total_unbin
+    
+  if binned=='BinnedResult':
+    f=open("/home/ke/TensorFlowAnalysis/"+binned+"/result_"+dec+"_"+geom+"_"+retrue+"_"+num+".txt", "r")
+    linesf=f.readlines()  #I
+    f.close()
+    g=open("/home/ke/TensorFlowAnalysis/"+binned+"/param_"+dec+"_"+geom+"_"+retrue+"_"+num+".txt", "r")
+    linesg=g.readlines() #the parameters
+    g.close()
+    for x in linesf:
+      result.append(float(x.split(' ')[1]))
+      err.append(float(x.split(' ')[2]))  
+   
+    for x in linesg:
+      result1.append(float(x.split(' ')[1]))
+      err1.append(float(x.split(' ')[2]))  
+    
+    total_bin=sum(result[1:-1])+result1[-1]
+    for i in range(len(result)):
+      result[i]=result[i]/total_bin
+    
+    result=result[1:]
+    for i in range(len(err)):
+      err[i]=err[i]/total_bin
+
+  return result, err
 """
 ##End of readfile
   tree = TChain("DecayTree")
