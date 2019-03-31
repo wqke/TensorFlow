@@ -10,7 +10,7 @@ from math import cos,sin,pi
 from scipy.optimize import curve_fit
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm,rc
-
+from uncertainties import *
 
 
 #Fedele prediction
@@ -73,78 +73,101 @@ def result(binned,dec,geom,retrue,num):
     result[-1]=result[-1]/total_unbin
     err[-1]=err[-1]/total_unbin
   if binned=='BinnedResult':
-    f=open("/home/ke/TensorFlowAnalysis/"+binned+"/param_"+dec+"_"+geom+"_"+retrue+"_"+num+".txt", "r")
-    linesf=f.readlines()  #the parameters
-    f.close()
+    #f=open("/home/ke/TensorFlowAnalysis/"+binned+"/param_"+dec+"_"+geom+"_"+retrue+"_"+num+".txt", "r")
+    #linesf=f.readlines()  #the parameters
+    #f.close()
     g=open("/home/ke/TensorFlowAnalysis/"+binned+"/result_"+dec+"_"+geom+"_"+retrue+"_"+num+".txt", "r")
     linesg=g.readlines() 
     g.close()
-    for x in linesf:
-      result.append(float(x.split(' ')[1]))
-      err.append(float(x.split(' ')[2]))  
     for x in linesg:
       result1.append(float(x.split(' ')[1]))
       err1.append(float(x.split(' ')[2]))  
-    total_bin=sum(result1[1:-1])+result[-1]
-    result[-1]=result[-1]/total_bin
-    err[-1]=err[-1]/total_bin
+    rate1=result1[0]
+    i1s=result1[1]
+    i2c=result1[2]
+    i2s=result1[3]
+    i6c=result1[4]
+    i6s=result1[5]
+    i3=result1[6]
+    i4=result1[7]
+    i5=result1[8]
+    i7=result1[9]
+    i8=result1[10]
+    i9=result1[11]
+    total_bin=0.733511
+    covmat = np.load("/home/ke/TensorFlowAnalysis/BinnedResult/cov_%s_%s_%s_%s.npy" % (dec,geom,retrue,num))
+    (rate1,i1s,i2c,i2s,i6c,i6s,i3,i4,i5,i7,i8,i9)= correlated_values([rate1,i1s,i2c,i2s,i6c,i6s,i3,i4,i5,i7,i8,i9],covmat)
+    i1c=(1.0/3.0)*(4*rate1 - 6.*i1s + i2c + 2.*i2s)
+    rab=((1.0/3.0)*(4*rate1 - 6.*i1s + i2c + 2.*i2s)+2*i1s-3*i2c-6*i2s)/(2*((1.0/3.0)*(4*rate1 - 6.*i1s + i2c + 2.*i2s)+2*i1s+i2c+2*i2s))
+    rlt= ((4*rate1 - 6.*i1s + i2c + 2.*i2s)-i2c)/(2*(3*i1s-i2s))
+    Gammaq=rate1
+    afb1=i6c+2*i6s
+    afb=(3/8.)*(afb1/Gammaq)
+    a3=(1/(np.pi*2))*i3/Gammaq
+    a9=(1/(2*np.pi))*i9/Gammaq
+    a6s=(-27/8.)*(i6s/Gammaq)
+    a4=(-2/np.pi)*i4/Gammaq
+    a8=(2/np.pi)*i8/Gammaq
+    a5=(-3/4.)*i5/Gammaq
+    a7=(-3/4.)*i7/Gammaq
+    result=[rab.n,rlt.n,afb.n,a6s.n,a3.n,a9.n,a4.n,a8.n,a5.n,a7.n,i1c.n/total_bin]   
+    err=[rab.s,rlt.s,afb.s,a6s.s,a3.s,a9.s,a4.s,a8.s,a5.s,a7.s,i1c.s/total_bin]  
+
   return result,err
 
 
 
 ##End of readfile
-"""
+
+
 def xlist(n):
-  return [n*2**(-0.15),n,n*2**(0.15)]
-"""
-def xlist(n):
-  liste=[10,25,50,75,100,150,200]
+  liste=[5,10,25,50,75,100,150,200]
   ind=liste.index(n)+1
   return [ind-0.15,ind,ind+0.15]
 
-Xrange=[xlist(10)[0],xlist(25)[1],xlist(50)[1],xlist(75)[1],xlist(100)[1],xlist(150)[1],xlist(200)[2]]
+Xrange=[xlist(5)[0],xlist(10)[1],xlist(25)[1],xlist(50)[1],xlist(75)[1],xlist(100)[1],xlist(150)[1],xlist(200)[2]]
 
 
 for i in range(11):
-  plt.errorbar([xlist(10)[0],xlist(25)[0],xlist(50)[0],xlist(75)[0],xlist(100)[0],xlist(150)[0],xlist(200)[0]],
-     [result("UnbinnedResult","3pi","all","true","10")[0][i],result("UnbinnedResult","3pi","all","true","25")[0][i],
+  plt.errorbar([xlist(5)[0],xlist(10)[0],xlist(25)[0],xlist(50)[0],xlist(75)[0],xlist(100)[0],xlist(150)[0],xlist(200)[0]],
+     [result("UnbinnedResult","3pi","all","true","5")[0][i],result("UnbinnedResult","3pi","all","true","10")[0][i],result("UnbinnedResult","3pi","all","true","25")[0][i],
      result("UnbinnedResult","3pi","all","true","50")[0][i],
     result("UnbinnedResult","3pi","all","true","75")[0][i],result("UnbinnedResult","3pi","all","true","100")[0][i],
       result("UnbinnedResult","3pi","all","true","150")[0][i],result("UnbinnedResult","3pi","all","true","200")[0][i]],
-     yerr=[result("UnbinnedResult","3pi","all","true","10")[1][i],result("UnbinnedResult","3pi","all","true","25")[1][i],
+     yerr=[result("UnbinnedResult","3pi","all","true","5")[1][i],result("UnbinnedResult","3pi","all","true","10")[1][i],result("UnbinnedResult","3pi","all","true","25")[1][i],
      result("UnbinnedResult","3pi","all","true","50")[1][i],result("UnbinnedResult","3pi","all","true","75")[1][i],
            result("UnbinnedResult","3pi","all","true","100")[1][i],result("UnbinnedResult","3pi","all","true","150")[1][i],
           result("UnbinnedResult","3pi","all","true","200")[1][i]],fmt='o', color='#6059f7',
 ecolor='#6059f7', elinewidth=3, capsize=0,label=label1)
 
-  plt.errorbar([xlist(10)[1],xlist(25)[1],xlist(50)[1],xlist(75)[1],xlist(100)[1],xlist(150)[1],xlist(200)[1]],
-     [result("BinnedResult","3pi","LHCb","true","10")[0][i],result("BinnedResult","3pi","LHCb","true","25")[0][i],
+  plt.errorbar([xlist(5)[1],xlist(10)[1],xlist(25)[1],xlist(50)[1],xlist(75)[1],xlist(100)[1],xlist(150)[1],xlist(200)[1]],
+     [result("BinnedResult","3pi","LHCb","true","5")[0][i],result("BinnedResult","3pi","LHCb","true","10")[0][i],result("BinnedResult","3pi","LHCb","true","25")[0][i],
       result("BinnedResult","3pi","LHCb","true","50")[0][i],result("BinnedResult","3pi","LHCb","true","75")[0][i],
     result("BinnedResult","3pi","LHCb","true","100")[0][i],result("BinnedResult","3pi","LHCb","true","150")[0][i],
      result("BinnedResult","3pi","LHCb","true","200")[0][i]],
-     yerr=[result("BinnedResult","3pi","LHCb","true","10")[1][i],result("BinnedResult","3pi","LHCb","true","25")[1][i],
+     yerr=[result("BinnedResult","3pi","LHCb","true","5")[1][i],result("BinnedResult","3pi","LHCb","true","10")[1][i],result("BinnedResult","3pi","LHCb","true","25")[1][i],
            result("BinnedResult","3pi","LHCb","true","50")[1][i],result("BinnedResult","3pi","LHCb","true","75")[1][i],
            result("BinnedResult","3pi","LHCb","true","100")[1][i],result("BinnedResult","3pi","LHCb","true","150")[1][i],
      result("BinnedResult","3pi","LHCb","true","200")[1][i]], fmt='o', color='#f2a026',
   ecolor='#f2a026', elinewidth=3, capsize=0,label=label2)
 
-  plt.errorbar([xlist(10)[2],xlist(25)[2],xlist(50)[2],xlist(75)[2],xlist(100)[2],xlist(150)[2],xlist(200)[2]],
-     [result("BinnedResult","3pi","LHCb","reco","10")[0][i],result("BinnedResult","3pi","LHCb","reco","25")[0][i],
+  plt.errorbar([xlist(5)[2],xlist(10)[2],xlist(25)[2],xlist(50)[2],xlist(75)[2],xlist(100)[2],xlist(150)[2],xlist(200)[2]],
+     [result("BinnedResult","3pi","LHCb","reco","5")[0][i],result("BinnedResult","3pi","LHCb","reco","10")[0][i],result("BinnedResult","3pi","LHCb","reco","25")[0][i],
       result("BinnedResult","3pi","LHCb","reco","50")[0][i],result("BinnedResult","3pi","LHCb","reco","75")[0][i],
       result("BinnedResult","3pi","LHCb","reco","100")[0][i],result("BinnedResult","3pi","LHCb","reco","150")[0][i],
     result("BinnedResult","3pi","LHCb","reco","200")[0][i]],
-     yerr=[result("BinnedResult","3pi","LHCb","reco","10")[1][i],result("BinnedResult","3pi","LHCb","reco","25")[1][i],
+     yerr=[result("BinnedResult","3pi","LHCb","reco","5")[1][i],result("BinnedResult","3pi","LHCb","reco","10")[1][i],result("BinnedResult","3pi","LHCb","reco","25")[1][i],
            result("BinnedResult","3pi","LHCb","reco","50")[1][i],result("BinnedResult","3pi","LHCb","reco","75")[1][i],
            result("BinnedResult","3pi","LHCb","reco","100")[1][i],result("BinnedResult","3pi","LHCb","reco","150")[1][i],
      result("BinnedResult","3pi","LHCb","reco","200")[1][i]], fmt='o', color='#960311',
   ecolor='#960311', elinewidth=3, capsize=0,label=label3)
-  plt.plot(Xrange,[Ilist[i]]*7,linestyle=':')
-  plt.fill_between(Xrange,[Ilist[i]-Ierrlist[i]]*7 ,[Ilist[i]+Ierrlist[i]]*7 ,alpha=0.5,color='lightgray',label='Theory')
+  plt.plot(Xrange,[Ilist[i]]*8,linestyle=':')
+  plt.fill_between(Xrange,[Ilist[i]-Ierrlist[i]]*8,[Ilist[i]+Ierrlist[i]]*8 ,alpha=0.5,color='lightgray',label='Theory')
   plt.title(r"Fit results for "+Iname[i])
   plt.xlabel("N (1000's)")
   plt.ylabel(Iname[i])
   #plt.xscale("log",basex=2.0)
-  plt.xticks([1,2,3,4,5,6,7],('10','25','50','75','100','150','200')) 
+  plt.xticks([1,2,3,4,5,6,7,8],('5','10','25','50','75','100','150','200')) 
   plt.legend()
   plt.savefig(Iname[i]+'.pdf')
   plt.close()
@@ -153,5 +176,3 @@ ecolor='#6059f7', elinewidth=3, capsize=0,label=label1)
   plt.close()
   plt.close()
 
-
-          
