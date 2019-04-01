@@ -16,10 +16,10 @@ from uncertainties import *
 #Fedele prediction
 val = {'I1c':3.03,
           'I1s':2.04,
-          'I2c':-0.89,
-          'I2s':0.35,
-          'I3': -0.56,
-          'I4':-0.74,
+          'I2c':-0.893,
+          'I2s':0.346,
+          'I3': -0.563,
+          'I4':-0.744,
           'I5': 1.61,
           'I6c':1.96,
           'I6s':-1.38,
@@ -32,11 +32,36 @@ for v in val:
 #  tot_rate=vals["I1c"]
 for v in val:
   val[v] = val[v]/tot_rate
-  
+
+I9th=val['I9']
+I8th=val['I8']
+I7th=val['I7']
+I6sth=val['I6s']
+I6cth=val['I6c']
+I5th=val['I5']
+I4th=val['I4']
+I3th=val['I3']
+I2sth=val['I2s']
+I2cth=val['I2c']
+I1sth=val['I1s']
+I1cth=val['I1c']
+rabth=(I1cth+2*I1sth-3*I2cth-6*I2sth)/(2*I1cth+4*I1sth+2*I2cth+4*I2sth)
+rltth=(3*I1cth-I2cth)/(6*I1sth-2*I2sth)
+Gammaqth=(3*I1cth+6*I1sth-I2cth-2*I1sth)/4.
+afb1th=I6cth+2*I6sth
+afbth=(3/8.)*(afb1th/Gammaqth)
+a3th=(1/(np.pi*2))*I3th/Gammaqth
+a9th=(1/(2*np.pi))*I9th/Gammaqth
+a6sth=(-27/8.)*(I6sth/Gammaqth)
+a4th=(-2/np.pi)*I4th/Gammaqth
+a8th=(2/np.pi)*I8th/Gammaqth
+a5th=(-3/4.)*(1-I8th-I7th-I9th-I4th-I3th-I2sth-I1sth-I1cth-I2cth-I6sth-I6cth)/Gammaqth
+a7th=(-3/4.)*I7th/Gammaqth
+
+
 Iname=["RAB","RLT","AFB","A6s","A3","A9","A4","A8","A5","A7","I1c"]
 
-[RAB,RLT,AFB,A6s,A3,A9,A4,A8,A5,A7,I1c]=[0.5549132947976879,0.8648180242634314,-0.06615214994487321,1.0270121278941566,-0.019653091098447942,0.,
-                                        0.10388062437751054,0.,-0.26626240352811464,0.,val["I1c"]]
+[RAB,RLT,AFB,A6s,A3,A9,A4,A8,A5,A7,I1c]=[rabth,rltth,afbth,a6sth,a3th,a9th,a4th,a8th,a5th,a7th,I1cth]
 [RABerr,RLTerr,AFBerr,A6serr,A3err,A9err,A4err,A8err,A5err,A7err,I1cerr]=[0.0062529608287506065,0.025602667902659606,
                                                                          0.009427987350140766,
                                                                          0.03054962092295636,0.0004794192172993514,
