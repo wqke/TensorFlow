@@ -96,6 +96,7 @@ Xrange=[xlist(5)[0],xlist(10)[1],xlist(25)[1],xlist(50)[1],xlist(75)[1],xlist(10
 
 
 for i in range(11):
+  """
   plt.errorbar([xlist(5)[0],xlist(10)[0],xlist(25)[0],xlist(50)[0],xlist(75)[0],xlist(100)[0],xlist(150)[0],xlist(200)[0]],
      [result("UnbinnedResult","3pi","all","true","5")[0][i],result("UnbinnedResult","3pi","all","true","10")[0][i],result("UnbinnedResult","3pi","all","true","25")[0][i],
      result("UnbinnedResult","3pi","all","true","50")[0][i],
@@ -106,7 +107,7 @@ for i in range(11):
            result("UnbinnedResult","3pi","all","true","100")[1][i],result("UnbinnedResult","3pi","all","true","150")[1][i],
           result("UnbinnedResult","3pi","all","true","200")[1][i]],fmt='o', color='#6059f7',
 ecolor='#6059f7', elinewidth=3, capsize=0,label=label1)
-
+"""
   plt.errorbar([xlist(5)[1],xlist(10)[1],xlist(25)[1],xlist(50)[1],xlist(75)[1],xlist(100)[1],xlist(150)[1],xlist(200)[1]],
      [result("BinnedResult","3pi","LHCb","true","5")[0][i],result("BinnedResult","3pi","LHCb","true","10")[0][i],result("BinnedResult","3pi","LHCb","true","25")[0][i],
       result("BinnedResult","3pi","LHCb","true","50")[0][i],result("BinnedResult","3pi","LHCb","true","75")[0][i],
