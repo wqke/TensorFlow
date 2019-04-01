@@ -33,6 +33,7 @@ Ierrlist=[I1serr,I2cerr,I2serr,I6cerr,I6serr ,I3err ,I4err ,I5err ,I7err ,I8err 
 label1=r"3$\pi$-unbinned-all-true"
 label2=r"3$\pi$-binned(4D)-LHCb-true"
 label3=r"3$\pi$-binned(4D)-LHCb-reco"
+label4=r"3$\pi$-binned(4D)-all-reco"
 
 
 #define readfile 
@@ -85,25 +86,7 @@ def result(binned,dec,geom,retrue,num):
     err=err[1:]
 
   return result, err
-"""
-##End of readfile
-  tree = TChain("DecayTree")
-  tree.Add(in_file)
-  tree.SetBranchStatus("*",0)
-  tree.SetBranchStatus("q2_true",1)
-  tree.SetBranchStatus("costheta_D_%s" % type,1)
-  tree.SetBranchStatus("costheta_L_%s" % type,1)
-  tree.SetBranchStatus("chi_%s" % type,1)
-  tree_cut = tree.CopyTree(cut[i])
-  #Array containing the fit variables
-  print "Creating fit variable array from tree"
 
-  data_sample = tree2array(tree_cut,branches=["costheta_D_%s" % type,"costheta_L_%s" % type ,"chi_%s" % type])#,step=step)
-  data_sample = rec2array(data_sample)
-  
- 
-  data_sample = sess.run(phsp.Filter(data_sample))
-"""
 
 """
 def xlist(n):
