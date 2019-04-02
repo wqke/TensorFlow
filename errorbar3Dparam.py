@@ -34,6 +34,8 @@ err7=[]
 result8=[]
 err8=[]
 
+
+
 f1=open("/home/ke/TensorFlowAnalysis/ParamResult/param_3pi_all_true_5_bintotal"+".txt", "r")
 lines1=f1.readlines()  #I
 f1.close()
@@ -90,6 +92,16 @@ for x in lines8:
 results=[result1,result2,result3,result4,result5,result6,result7,result8]
 errs=[err1,err2,err3,err4,err5,err6,err7,err8]
 [I1s,I2c,I2s,I6c,I6s ,I3 ,I4 ,I5 ,I7 ,I8 ,I9]=[0,0,0,0,0,0,0,0,0,0,0]
+total=0
+totalerr=0
+for result in results:
+  total+=result[-1]
+  totalerr+=err[-1]
+total=total/8.
+totalerr=totalerr/8.
+  
+  
+  
 for result in results:  
   I1s+=result[0]
   I2c+=result[1]
@@ -126,13 +138,13 @@ I7=I7/8.
 I8=I8/8.
 I9=I9/8.
 """
-[I1s,I2c,I2s,I6c,I6s ,I3 ,I4 ,I5 ,I7 ,I8 ,I9]=[0.39581512500000005, -0.16444825, 0.0676855, 0.324758125, -0.252814625, -0.11448449999999999, -0.13989274999999998, 0.27817987499999997, -0.005926125, 0.00234375, -0.003685375]
-[I1serr,I2cerr,I2serr,I6cerr,I6serr ,I3err ,I4err ,I5err ,I7err ,I8err ,I9err]=[0.00033787499999999996, 0.0009574999999999999, 0.0005718749999999999, 0.001021875, 0.000597125, 0.000588375, 0.000589875, 0.000532625, 0.0006163750000000001, 0.0006617500000000001, 0.000595]
+[I1s,I2c,I2s,I6c,I6s ,I3 ,I4 ,I5 ,I7 ,I8 ,I9,FL]=[0.39581512500000005, -0.16444825, 0.0676855, 0.324758125, -0.252814625, -0.11448449999999999, -0.13989274999999998, 0.27817987499999997, -0.005926125, 0.00234375, -0.003685375,0.440082972583625]
+[I1serr,I2cerr,I2serr,I6cerr,I6serr ,I3err ,I4err ,I5err ,I7err ,I8err ,I9err,FLerr]=[0.00033787499999999996, 0.0009574999999999999, 0.0005718749999999999, 0.001021875, 0.000597125, 0.000588375, 0.000589875, 0.000532625, 0.0006163750000000001, 0.0006617500000000001, 0.000595,0.00022790563627750002]
 
 [RAB,RLT,AFB,A6s,A3,A9,A4,A8,A5,A7,I1c]=[0.5449327872909999, 0.7860995595493749, -0.0678267719625125, 0.8532498338810001, -0.018220747200399998, -0.000586532579182, 0.08905846535782501, 0.001492111785675125, -0.20863486991425, 0.00444456061909625, 0.53201086622]
 [RABerr,RLTerr,AFBerr,A6serr,A3err,A9err,A4err,A8err,A5err,A7err,I1cerr]=[0.0019113358779025, 0.0013271029985137501, 0.000488612975543875, 0.0020149376234124996, 9.364096372086249e-05, 9.471892186500001e-05, 0.000375589397310375, 0.0004212582904085, 0.0003995231617145, 0.000462318621479125, 0.00060464188557475]
 
-Iname=["RAB","RLT","AFB","A6s","A3","A9","A4","A8","A5","A7","I1c"]
+Iname=["RAB","RLT","AFB","A6s","A3","A9","A4","A8","A5","A7","I1c","FL"]
 Ilist=[RAB,RLT,AFB,A6s,A3,A9,A4,A8,A5,A7,I1c]
 Ierrlist=[RABerr,RLTerr,AFBerr,A6serr,A3err,A9err,A4err,A8err,A5err,A7err,I1cerr]
 
@@ -201,8 +213,9 @@ def result(binned,dec,geom,retrue,num):
     a8=(2/np.pi)*i8/Gammaq
     a5=(-3/4.)*i5/Gammaq
     a7=(-3/4.)*i7/Gammaq
-    result=[rab.n,rlt.n,afb.n,a6s.n,a3.n,a9.n,a4.n,a8.n,a5.n,a7.n,i1c.n/total_bin]   
-    err=[rab.s,rlt.s,afb.s,a6s.s,a3.s,a9.s,a4.s,a8.s,a5.s,a7.s,i1c.s/total_bin]  
+    fl=(3.*i1c-i2c)/(3.*i1c+6.*i1s-i2c-2.*i2s)
+    result=[rab.n,rlt.n,afb.n,a6s.n,a3.n,a9.n,a4.n,a8.n,a5.n,a7.n,i1c.n/total_bin,fl.n]   
+    err=[rab.s,rlt.s,afb.s,a6s.s,a3.s,a9.s,a4.s,a8.s,a5.s,a7.s,i1c.s/total_bin,fl.s]  
 
   return result,err
 
