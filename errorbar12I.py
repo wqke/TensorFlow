@@ -22,9 +22,6 @@ import sys, os
 import numpy as np
 import math
 from math import cos,sin,pi
-
-sys.path.append("../")
-os.environ["CUDA_VISIBLE_DEVICES"] = ""   # Do not use GPU
 import root_pandas
 import pandas as pd
 import TensorFlowAnalysis as tfa
@@ -32,6 +29,9 @@ from tensorflow.python.client import timeline
 from root_numpy import root2array, rec2array, tree2array
 from ROOT import TFile,TChain,TTree
 from uncertainties import *
+sys.path.append("../")
+os.environ["CUDA_VISIBLE_DEVICES"] = ""   # Do not use GPU
+
 [I1s,I2c,I2s,I6c,I6s ,I3 ,I4 ,I5 ,I7 ,I8 ,I9]=[0.39581512500000005, -0.16444825, 0.0676855, 0.324758125, -0.252814625, -0.11448449999999999, -0.13989274999999998, 0.27817987499999997, -0.005926125, 0.00234375, -0.003685375]
 [I1serr,I2cerr,I2serr,I6cerr,I6serr ,I3err ,I4err ,I5err ,I7err ,I8err ,I9err]=[0.00033787499999999996, 0.0009574999999999999, 0.0005718749999999999, 0.001021875, 0.000597125, 0.000588375, 0.000589875, 0.000532625, 0.0006163750000000001, 0.0006617500000000001, 0.000595]
 
