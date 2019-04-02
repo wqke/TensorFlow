@@ -38,7 +38,7 @@ files=['dsgamma_5pi_LHCb_Total/model_vars.root',
 
 
 
-plt.hist(qlist[~np.isnan(qlist)]bins=100,,density=True,histtype='step')  
+plt.hist(qlist[~np.isnan(qlist)],bins=100,density=True,histtype='step')  
 plt.title(r'$q^2$')
 plt.xlim(0.,13.)
 plt.savefig('/home/ke/graphs/Bd2DstDs1_q.pdf')
@@ -46,6 +46,11 @@ plt.close()
 
 
 
+plt.hist(chilist[~np.isnan(chilist)],density=True,histtype='step')  
+plt.title(r'$\chi$')
+plt.savefig('/home/ke/graphs/Bd2DstDs1_chi.pdf')
+plt.close()
+"""
 plt.hist(qlist[~np.isnan(qlist)]bins=100,,density=True,histtype='step')  
 plt.title(r'$q^2$')
 plt.xlim(0.,13.)
@@ -66,7 +71,7 @@ plt.title(r'$q^2$')
 plt.xlim(0.,13.)
 plt.savefig('/home/ke/graphs/Bu2DststDs_q.pdf')
 plt.close()
-
+"""
 
 
 
@@ -133,7 +138,7 @@ plt.savefig('/home/ke/graphs/Bd2DstDs_D.pdf')
 plt.close()
 
 plt.hist(chilist1[~np.isnan(chilist1)],density=True,histtype='step')  
-plt.title(r'$\chi$)')
+plt.title(r'$\chi$')
 plt.savefig('/home/ke/graphs/Bd2DstDs_chi.pdf')
 plt.close()
 
@@ -175,6 +180,13 @@ for file in files2[1:]:
   Dlist2.append(df['costheta_D_reco'],ignore_index=True)#[~np.isnan(df['costheta_D_reco'])]
   chilist2.append(df['chi_reco'],ignore_index=True)#[~np.isnan(df['chi_reco'])]
 
+  
+plt.hist(chilist2[~np.isnan(chilist2)],density=True,histtype='step')  
+plt.title(r'$\chi$')
+plt.savefig('/home/ke/graphs/Bd2DstDsst_chi.pdf')
+plt.close()
+  
+  
 """
 plt.hist(qlist2[~np.isnan(qlist2)],bins=100,density=True,histtype='step')  
 plt.title(r'$q^2$')
@@ -240,7 +252,7 @@ plt.savefig('/home/ke/graphs/Bu2DststDs.pdf')
 plt.close()
 
 plt.hist(chilist3[~np.isnan(chilist3)],density=True,histtype='step')  
-plt.title(r'$\chi$)')
+plt.title(r'$\chi$')
 plt.savefig('/home/ke/graphs/Bu2DststDs.pdf')
 plt.close()
 
@@ -305,7 +317,7 @@ plt.savefig('/home/ke/graphs/Bu2DststDsst_D.pdf')
 plt.close()
 
 plt.hist(chilist4[~np.isnan(chilist4)],density=True,histtype='step')  
-plt.title(r'$\chi$)')
+plt.title(r'$\chi$')
 plt.savefig('/home/ke/graphs/Bu2DststDsst_chi.pdf')
 plt.close()
 
@@ -372,6 +384,6 @@ plt.savefig('/home/ke/graphs/Bu2DststDs1_D.pdf')
 plt.close()
 
 plt.hist(chilist5[~np.isnan(chilist5)],density=True,histtype='step')  
-plt.title(r'$\chi$)')
+plt.title(r'$\chi$')
 plt.savefig('/home/ke/graphs/Bu2DststDs1_chi.pdf')
 plt.close()
