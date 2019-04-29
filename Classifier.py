@@ -14,7 +14,9 @@ from root_pandas import *
 import sys, os, math
 os.environ["CUDA_VISIBLE_DEVICES"] = ""   # Do not use GPU
 from sklearn.model_selection import  train_test_split,KFold
+from sklearn.utils.class_weight import compute_sample_weight
 
+import joblib
 
 import pandas.core.common as com
 from pandas.core.index import Index
@@ -41,7 +43,7 @@ if __name__ == "__main__" :
 
   data_sample_fit = read_root(data_file_fit,"DecayTree",columns=branch_names)
 
-  data_sample_fit = data_sample_fit.query("Tau_life_%s > %s and Tau_life_%s <= %s " % (var_type,var_range["Tau_life_%s" % var_type][0],var_type,var_range["Tau_life_%s" % var_type][1]))
+  data_sample_fit = data_sample_fit.query("Tau_life_%s > %s and Tau_life_%s <= %s and Tau_FD>4000" % (var_type,var_range["Tau_life_%s" % var_type][0],var_type,var_range["Tau_life_%s" % var_type][1]))
   #data_sample_fit = data_sample_fit[branch_names]
 
   #Randomly sample down to required size
@@ -63,15 +65,15 @@ if __name__ == "__main__" :
   #keep the same number of D backgrounds  (equal to Dplus numbers)
   background_sample_fit={}     
   background_sample_fit['Dplus']= read_root(bkg_files['Dplus'],"DecayTree",columns=branch_names)     
-  background_sample_fit['Dplus'] = background_sample_fit['Dplus'].query("Tau_life_%s > %s and Tau_life_%s <= %s " % (var_type,var_range["Tau_life_%s" % var_type][0],var_type,var_range["Tau_life_%s" % var_type][1]))
+  background_sample_fit['Dplus'] = background_sample_fit['Dplus'].query("Tau_life_%s > %s and Tau_life_%s <= %s and Tau_FD>4000" % (var_type,var_range["Tau_life_%s" % var_type][0],var_type,var_range["Tau_life_%s" % var_type][1]))
 
   sample_length=len(background_sample_fit['Dplus'])       
   background_sample_fit['Ds']= read_root(bkg_files['Ds'],"DecayTree",columns=branch_names)      
-  background_sample_fit['Ds'] = background_sample_fit['Ds'].query("Tau_life_%s > %s and Tau_life_%s <= %s " % (var_type,var_range["Tau_life_%s" % var_type][0],var_type,var_range["Tau_life_%s" % var_type][1]))
+  background_sample_fit['Ds'] = background_sample_fit['Ds'].query("Tau_life_%s > %s and Tau_life_%s <= %s and Tau_FD>4000" % (var_type,var_range["Tau_life_%s" % var_type][0],var_type,var_range["Tau_life_%s" % var_type][1]))
   background_sample_fit['Ds'] = background_sample_fit['Ds'].sample(n=int(sample_length),random_state=int(sample_length/1000.))
 
   background_sample_fit['D0']= read_root(bkg_files['D0'],"DecayTree",columns=branch_names)      
-  background_sample_fit['D0'] = background_sample_fit['D0'].query("Tau_life_%s > %s and Tau_life_%s <= %s " % (var_type,var_range["Tau_life_%s" % var_type][0],var_type,var_range["Tau_life_%s" % var_type][1]))
+  background_sample_fit['D0'] = background_sample_fit['D0'].query("Tau_life_%s > %s and Tau_life_%s <= %s and Tau_FD>4000" % (var_type,var_range["Tau_life_%s" % var_type][0],var_type,var_range["Tau_life_%s" % var_type][1]))
   background_sample_fit['D0'] = background_sample_fit['D0'].sample(n=int(sample_length),random_state=int(sample_length/1000.))
 
   bkg_samp=background_sample_fit[bkg_names[0]]
@@ -98,11 +100,11 @@ if __name__ == "__main__" :
   X_dev,X_eval, y_dev,y_eval = train_test_split(X, y,test_size=0.33, random_state=42)
   X_train,X_test, y_train,y_test = train_test_split(X_dev, y_dev,test_size=0.33, random_state=492)  
   
-  bdt = GradientBoostingClassifier(n_estimators=200,max_depth=1,learning_rate=0.5)
-#sub_sample=0.5
-                                                                   
-  bdt.fit(X_train, y_train)
-
+  
+  #weight the samples such that they are treated as having equal size statistically
+  weights = compute_sample_weight(class_weight='balanced', y=y_train)
+  bdt = GradientBoostingClassifier(n_estimators=1000, max_depth=1, learning_rate=0.1, min_samples_split=2,verbose=1)
+  bdt.fit(X_train, y_train,sample_weight=weights)
 
   def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     decisions = []
@@ -133,8 +135,7 @@ if __name__ == "__main__" :
     center = (bins[:-1] + bins[1:]) / 2
     plt.errorbar(center, hist, yerr=err, fmt='o', c='r', label='S (test)')
     
-    hist, bins = np.histogram(decisions[3],
-                              bins=bins, range=low_high, normed=True)
+    hist, bins = np.histogram(decisions[3],bins=bins, range=low_high, normed=True)
     scale = len(decisions[2]) / sum(hist)
     err = np.sqrt(hist * scale) / scale
 
@@ -162,4 +163,8 @@ if __name__ == "__main__" :
   y_predicted = bdt.decision_function(X)
   y_predicted.dtype = [('y', np.float64)]
   array2root(y_predicted, "/home/ke/tmps/test-prediction.root", "BDToutput")
-
+  
+  
+  joblib.dump(bdt, 'bdt.joblib')
+  #To load in other scripts : bdt = joblib.load('bdt.joblib')
+  
