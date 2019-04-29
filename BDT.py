@@ -26,3 +26,13 @@ from pandas.tools.plotting import scatter_matrix
 
 
 branch_names=['3pi_M',  'Tau_m12', 'Tau_m13','Tau_m23','Tau_FD','Tau_life_reco']
+bdt = joblib.load('bdt.joblib')
+
+feed = root2array("/home/ke/tmps/signal.root","DecayTree",branch_names)
+feed = rec2array(signal)
+
+X_test = 
+
+
+y_predicted = bdt.predict(X_test)
+
