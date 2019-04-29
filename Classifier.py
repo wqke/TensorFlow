@@ -23,12 +23,10 @@ from pandas.tools import plotting
 from pandas.tools.plotting import scatter_matrix
 
 
+branch_names=[ 'Tau_FD_z',  'Tau_E', '3pi_M', '3pi_PZ', 'Tau_m12', 'Tau_m13','Tau_m23',
+         'Tau_FD', 'costheta_D_reco','costheta_L_reco','q2_reco','Tau_PZ_reco',
+'chi_reco', 'Tau_life_reco']
 
-branch_names=[ 'Tau_FD_z',  'Tau_M', 'Tau_E','Tau_P', '3pi_M', '3pi_PZ', 'Tau_m12', 'Tau_m13','Tau_m23',
-                 'Tau_FD', 'costheta_D_reco','costheta_L_reco','q2_reco','Tau_PZ_reco',
-                 'chi_reco', 'Tau_life_reco','hamweight_SM','hamweight_T1','hamweight_T2']
-
-branch_names.remove(['hamweight_SM','hamweight_T1','hamweight_T2','Tau_M'])
 
 if __name__ == "__main__" :
 
