@@ -31,7 +31,7 @@ bdt = joblib.load('bdt.joblib')
 
 """
 bkg_col=['3pi_M',  'Tau_m12', 'Tau_m13','Tau_m23','Tau_FD','Tau_life_reco','q2_reco','costheta_L_reco','costheta_D_reco','chi_reco']
-sig_col=bkg_col+['hamweight_SM','hamweight_T1','hamweight_T2']
+sig_col=bkg_col+['hamweight_SM','hamweight_T1','hamweight_T2',"w_I1c","w_I1s","w_I2c", "w_I2s",  "w_I3", "w_I4", "w_I5", "w_I6c" ,"w_I6s" ,"w_I7" ,"w_I8" ,"w_I9"] 
 
 file_names=['Ds','Dplus','D0','prompt','feed']
 for name in file_names:
@@ -41,7 +41,9 @@ for name in file_names:
 
 dg=read_root("/data/lhcb/users/hill/Bd2DstTauNu_Angular/RapidSim_tuples/Bd2DstTauNu/3pi_LHCb_Total/model_vars_weights_hammer.root",columns=sig_col)
 print len(dg)
-dg=dg.query("Tau_FD>4000",inplace=True)  
+dg=dg.query("Tau_FD>4000 and chi_reco<%s and chi_reco>%s and costheta_L_reco<1. and costheta_L_reco>-1. and costheta_D_reco<1. and costheta_D_reco>-1." %(np.pi,-np.pi))  
+print len(dg)
+
 
 dg.to_root("/home/ke/tmps/signal.root","DecayTree")
 """
@@ -148,3 +150,21 @@ plt.savefig('BDT.pdf')
 
 
 
+
+
+col=["hamweight_T2","hamweight_SM","BDT"]  
+df=read_root("/data/lhcb/users/hill/Bd2DstTauNu_Angular/RapidSim_tuples/Bd2DstTauNu/3pi_LHCb_Total/model_vars_weights_hammer_BDT.root","DecayTree",columns=col)
+BDT=df["BDT"].values
+centersSM,heightsSM,_=plt.hist(BDT,weights=df["hamweight_SM"].values,density=True,bins=100,histtype='stepfilled',alpha=0.5,label='SM')
+centersT2,heightsT2,_=plt.hist(BDT,weights=df["hamweight_T2"].values,density=True,bins=100,histtype='stepfilled',alpha=0.5,label='T2')
+plt.title('BDT')
+plt.legend()
+plt.savefig('BDTcompar.pdf')
+plt.close()
+plt.close()
+newheight=[]
+for i in range(len(heightsSM)):
+  newheight.append(heightsSM[i]/float(heightsT2[i]))
+plt.plot(centersSM,newheight)
+plt.title(r'$BDT_{SM}/BDT_{T2}$')
+plt.save("division.pdf")
