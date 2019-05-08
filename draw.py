@@ -4,13 +4,85 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import os
 import root_pandas
+from root_pandas import *
 import pandas as pd
 import numpy as np
 from numpy import cos,sin,tan,sqrt,absolute,real,conjugate,imag,abs,max,min
 from scipy.optimize import curve_fit
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm,rc
+from skhep.visual import MplPlotter as skh_plt
 
+
+
+
+###
+df=read_root("/data/lhcb/users/hill/Bd2DstTauNu_Angular/RapidSim_tuples/Bd2DstTauNu/3pi_LHCb_Total/model_vars_weights_hammer_BDT.root",
+             'DecayTree',columns=['hamweight_SM','hamweight_T2','BDT','Tau_FD'])
+SM=df['hamweight_SM']
+T2=df['hamweight_T2']
+
+#skh_plt.ratio_plot(dict(x=df['Tau_FD'],bins=100,range=[0.,100000],normed=True,color='r',weights=SM.values,histtype='step',linewidth=0.8,label=label1),dict(x=df['Tau_FD'],bins=100,range=[0.,100000.],normed=True,color='b',weights=T2.values,histtype='step',linewidth=0.8,label=label2),ratio_range=[0.8,1.2])
+bin_heights1, bin_borders1, _=plt.hist(df['BDT'],weights=SM.values,label='SM',range=[-4.,4.],histtype='step',color='red',bins=20)
+bin_heights2, bin_borders2, _=plt.hist(df['BDT'],weights=T2.values,label='T2',range=[-4.,4.],histtype='step',color='blue',bins=20)
+bin_centers = bin_borders1[:-1] + np.diff(bin_borders1) / 2
+plt.yscale('log')
+plt.xlabel('BDT')
+plt.legend()
+plt.xlim(-4.,4.)
+plt.title('BDT')
+plt.savefig('BDT.pdf')
+plt.close()
+plt.close()
+
+heights=[]
+for i in range(len(bin_centers)):
+  heights.append(bin_heights1[i]/float(bin_heights2[i]))
+  
+
+plt.axhline(y=np.average(heights[:-1]),linestyle='--',color='red')
+
+
+plt.scatter(bin_centers,heights,color='gray')
+
+plt.ylim(0.6,0.9) 
+plt.xlim(-4.,4.)
+plt.title("BDT SM/T2 ratio")
+plt.savefig("BDTratio.pdf")
+plt.close()
+
+  
+##
+
+Tau_FD=[element/1000. for element in df['Tau_FD']]
+bin_heights1, bin_borders1, _=plt.hist(Tau_FD,weights=SM.values,label='SM',histtype='step',color='red',bins=20,range=[0.,100.])
+bin_heights2, bin_borders2, _=plt.hist(Tau_FD,weights=T2.values,label='T2',histtype='step',color='blue',bins=20,range=[0.,100.])
+bin_centers = bin_borders1[:-1] + np.diff(bin_borders1) / 2
+plt.yscale('log')
+plt.xlabel('Tau_FD [mm]')
+plt.legend()
+plt.xlim(0.,100.)
+plt.title('Tau_FD')
+plt.savefig('TauFD.pdf')
+plt.close()
+plt.close()
+
+heights=[]
+for i in range(len(bin_centers)):
+  heights.append(bin_heights1[i]/float(bin_heights2[i]))
+
+plt.axhline(y=np.average(heights),linestyle='--',color='red')  
+
+plt.scatter(bin_centers,heights,color='gray')
+
+plt.xlabel('Tau_FD [mm]')
+plt.ylim(0.6,0.9)  
+plt.xlim(0.,100.)
+plt.title("Tau_FD SM/T2 ratio")
+plt.savefig("FDratio.pdf")
+plt.close()
+  
+###
 df=root_pandas.read_root('result_DstTauNu.root',key='data')
 dg=root_pandas.read_root('result_DstTauNu.root',key='fit_result')
 
