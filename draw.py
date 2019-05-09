@@ -14,9 +14,10 @@ from matplotlib import cm,rc
 from skhep.visual import MplPlotter as skh_plt
 
 
+import rootplot.root2matplotlib as r2m   #plot errorbars on the histogram 
+from ROOT import TH1F,TChain,TFile       #divide two histograms
 
-
-###
+#####
 df=read_root("/data/lhcb/users/hill/Bd2DstTauNu_Angular/RapidSim_tuples/Bd2DstTauNu/3pi_LHCb_Total/model_vars_weights_hammer_BDT.root",
              'DecayTree',columns=['hamweight_SM','hamweight_T2','BDT','Tau_FD'])
 SM=df['hamweight_SM']
@@ -55,8 +56,8 @@ plt.close()
 ##
 
 Tau_FD=[element/1000. for element in df['Tau_FD']]
-bin_heights1, bin_borders1, _=plt.hist(Tau_FD,weights=SM.values,label='SM',histtype='step',color='red',bins=20,range=[0.,100.])
-bin_heights2, bin_borders2, _=plt.hist(Tau_FD,weights=T2.values,label='T2',histtype='step',color='blue',bins=20,range=[0.,100.])
+bin_heights1, bin_borders1, _=plt.hist(Tau_FD,weights=SM.values,label='SM',normed=True,histtype='step',color='red',bins=100,range=[0.,100.])
+bin_heights2, bin_borders2, _=plt.hist(Tau_FD,weights=T2.values,label='T2',normed=True,histtype='step',color='blue',bins=100,range=[0.,100.])
 bin_centers = bin_borders1[:-1] + np.diff(bin_borders1) / 2
 plt.yscale('log')
 plt.xlabel('Tau_FD [mm]')
