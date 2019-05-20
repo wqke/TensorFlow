@@ -204,20 +204,22 @@ if __name__ == "__main__" :
   	for c in init_vals:
 		df = default_results[default_results[0].str.contains("%s" % c)]
 		init_vals[c] = df.iat[0,1]
-		
-  Rate = tfa.FitParameter("Rate" , 0.75, 0., 10.)
-  I1s = tfa.FitParameter("I1s" , init_vals["I1s"], -1, 1)
-  I2c = tfa.FitParameter("I2c" , init_vals["I2c"], -1, 1)
-  I2s = tfa.FitParameter("I2s" , init_vals["I2s"], -1, 1)
-  I6c = tfa.FitParameter("I6c" , init_vals["I6c"], -1, 1)
-  I6s = tfa.FitParameter("I6s" , init_vals["I6s"], -1, 1)
-  I3  = tfa.FitParameter("I3"  , init_vals["I3"], -1, 1)
-  I4  = tfa.FitParameter("I4"  , init_vals["I4"], -1, 1)
-  I5  = tfa.FitParameter("I5"  , init_vals["I5"], -1, 1)
-  I7  = tfa.FitParameter("I7"  , init_vals["I7"], -1, 1)
-  I8  = tfa.FitParameter("I8"  , init_vals["I8"], -1, 1)
-  I9  = tfa.FitParameter("I9"  , init_vals["I9"], -1, 1)
 
+  Rate = tfa.FitParameter("Rate" , 0.75, 0., 10.)
+  I1s =  init_vals["I1s"]
+  I2c = init_vals["I2c"]
+  I2s = init_vals["I2s"]
+  I6c = init_vals["I6c"]
+  I6s = init_vals["I6s"]
+  I3  = init_vals["I3"]
+  I4  = init_vals["I4"]
+  I5  = init_vals["I5"]
+  I7  = init_vals["I7"]
+  I8  = init_vals["I8"]
+  I9  = init_vals["I9"]
+	
+	
+	
   #The floating fractions of the bkg
   frac_signal = tfa.FitParameter("frac_signal", frac['signal'] , 0., 1.)
   frac_Ds = tfa.FitParameter("frac_Ds", frac['Ds'] , 0., 1.)
@@ -245,14 +247,10 @@ if __name__ == "__main__" :
     branch_names.append(weight)
     branch_names.append("Tau_FD")
     w[c] = read_root(template_file,"DecayTree",columns=branch_names)
-    #w[c] = w[c].sample(n=1000000,random_state=9289)
     w[c] = w[c].query(cuts)
     w[c] = w[c][[weight]]
     w[c] = w[c].values 
     w[c] = np.reshape(w[c], len(w[c]))
-#    for i in range(len(w[c])):
-#      w[c][i] = w[c][i] + random.gauss(0.0,0.01*np.abs(w[c][i]))
-#    print w[c]
     branch_names.remove(weight)
     branch_names.remove("Tau_FD")
   
@@ -274,13 +272,8 @@ if __name__ == "__main__" :
   
   bkg_files = {}
   
-#  bkg_names.remove(syst)	
   for bkg in bkg_names:
      bkg_files[bkg] = "/data/lhcb/users/hill/Bd2DstTauNu_Angular/RapidSim_tuples/Merged_Bkg/%s_BDT.root" % bkg
-#  bkg_files[syst]="/data/lhcb/users/hill/Bd2DstTauNu_Angular/RapidSim_tuples/Merged_Bkg/%s/%s_%s.root" %(syst,syst,filenumber)  
-#  bkg_names.append(syst)	
-
-
 
   bkg_samples={}
   for bkg in bkg_names:
@@ -316,16 +309,13 @@ if __name__ == "__main__" :
     pdf += I6s*histos["I6s"]
     pdf += I7*histos["I7"]
     pdf += I8*histos["I8"]
-    pdf += I9*histos["I9"]
-    #pdf += (1.0 - I1c - I1s - I2c - I2s - I3 - I4 - I5 - I6c - I6s - I7 - I8)*histos["I9"]
-    
+    pdf += I9*histos["I9"]  
     pdf = Rate*pdf
     pdf = frac_signal*pdf
     pdf += frac_Ds*histos_bkg["Ds"]
     pdf += frac_Dplus*histos_bkg["Dplus"]
     pdf += feed_frac*frac_signal*histos_bkg["feed"]    
     pdf += frac["D0"]*histos_bkg["D0"]
-       
     pdf += np.abs(1.0 - frac_signal - frac_Ds - frac_Dplus - frac['feed'] - frac["D0"])*histos_bkg["prompt"]
     
     return pdf
@@ -411,216 +401,12 @@ if __name__ == "__main__" :
     filenumber_name=""		
 
 
-  np.save("%s/cov_Lifetime_%s_%s_%s_%s_Hammer_%s%s%s%s.npy" % (results_dir,sub_mode,geom,var_type,num_sig,ham,syst_name,filenumber_name,toy_suf),covmat)
-  
-  #Derived results
-  i9=result['I9'][0]
-  i8=result['I8'][0]
-  i7=result['I7'][0]
-  i6s=result['I6s'][0]
-  i6c=result['I6c'][0]
-  i4=result['I4'][0]
-  i5=result['I5'][0]
-  i3=result['I3'][0]
-  i2s=result['I2s'][0]
-  i2c=result['I2c'][0]
-  i1s=result['I1s'][0]
-  #i1c=result['I1c'][0]
-  rate=result['Rate'][0]
-  (rate,i1s,i2c,i2s,i6c,i6s,i3,i4,i5,i7,i8,i9) = correlated_values([rate,i1s,i2c,i2s,i6c,i6s,i3,i4,i5,i7,i8,i9],covmat)
-  #(rate,i1c,i1s,i2c,i2s,i6c,i6s,i3,i4,i5,i7,i8) = correlated_values([rate,i1c,i1s,i2c,i2s,i6c,i6s,i3,i4,i5,i7,i8],covmat)
-  
-  #i9 = 1.0 - i1c - i1s - i2c - i2s - i6c - i6s - i3 - i4 - i5 - i7 - i8
-  i1c=(4 - 6*i1s + i2c + 2*i2s)/3
-  rab=(i1c+2*i1s-3*i2c-6*i2s)/(2*(i1c+2*i1s+i2c+2*i2s))
-  rlt= (3*i1c-i2c)/(2*(3*i1s-i2s))
-  Gammaq=(3*i1c+6*i1s-i2c-2*i1s)/4.
-  afb1=i6c+2*i6s
-  afb=(3/8.)*(afb1/Gammaq)
-  a3=(1/(np.pi*2))*i3/Gammaq
-  a9=(1/(2*np.pi))*i9/Gammaq
-  a6s=(-27/8.)*(i6s/Gammaq)
-  a4=(-2/np.pi)*i4/Gammaq
-  a8=(2/np.pi)*i8/Gammaq
-  a5=(-3/4.)*(1-i8-i7-i9-i4-i3-i2s-i1s-i1c-i2c-i6s-i6c)/Gammaq
-  a7=(-3/4.)*i7/Gammaq
-  para={'RAB':(rab.n,rab.s),'RLT':(rlt.n,rlt.s),'AFB':(afb.n,afb.s),'A6s':(a6s.n,a6s.s),'A3':(a3.n,a3.s),'A9':(a9.n,a9.s),'A4':(a4.n,a4.s),'A8':(a8.n,a8.s),'A5':(a5.n,a5.s),'A7':(a7.n,a7.s), 'I1c': (i1c.n,i1c.s)}
-  p = open( "%s/param_Lifetime_%s_%s_%s_%s_Hammer_%s%s%s%s.txt" % (results_dir,sub_mode,geom,var_type,num_sig,ham,syst_name,filenumber_name,toy_suf), "w")
-  slist=['RAB','RLT','AFB','A6s','A3','A9','A4','A8','A5','A7','I1c']
-  for s in slist:
-    a=s+" "
-    a += str(para[s][0])
-    a += " "
-    a += str(para[s][1])
-    p.write(a + "\n")
-  p.close()
-  print para
-  
+
+  """
   #Write final results
   tfa.WriteFitResults(result,"%s/result_Lifetime_%s_%s_%s_%s_Hammer_%s%s%s%s.txt" % (results_dir,sub_mode,geom,var_type,num_sig,ham,syst_name,filenumber_name,toy_suf))
   #Write initial values
   init_vals = tfa.InitialValues()
   tfa.WriteFitResults(init_vals,"%s/init_Lifetime_%s_%s_%s_%s_Hammer_%s%s%s%s.txt" % (results_dir,sub_mode,geom,var_type,num_sig,ham,syst_name,filenumber_name,toy_suf))
- 
+  """
 	
-  #Get final fit PDF
-  fit_result = sess.run(fit_model(histos,histos_bkg))
-    	
-  #1D projections
-  fit_hist_proj = {}
-  err_hist_proj  = {}
-  norm_proj = {}
-  fit_result_proj = {}
-  data_vals = {}
-  
-  ds_dplus_feed_d0_prompt = {}
-  ds_dplus_d0_prompt = {}
-  dplus_d0_prompt = {}
-  d0_prompt = {}
-  d0 = {}
-  
-  for b in branch_names:
-  	
-    axis = [0,1,2,3]
-    if(b=="costheta_D_%s" % var_type):
-      axis.remove(0)
-    elif(b=="costheta_L_%s" % var_type):
-      axis.remove(1)
-    elif(b=="chi_%s" % var_type):
-      axis.remove(2)
-    elif(b=="BDT"):
-      axis.remove(3)
-    	
-    if(toy=="N"):
-      data_vals["%s" % b] = data_sample_fit[b].values
-      #For equi-populated bins
-      fit_hist_proj["%s" % b] = MakeHistogram_1D(data_vals["%s" % b], (qc_bin_vals["%s" % b]),weight_a)
-      #For equal sized bins
-      #fit_hist_proj["%s" % b] = MakeHistogram_1D(data_vals["%s" % b], var_bins[b])
-    else:
-      fit_hist_proj["%s" % b] = np.sum(fit_hist, axis=tuple(axis), keepdims=False)
-   
-    err_hist_proj["%s" % b] = np.sqrt(fit_hist_proj["%s" % b])
-    norm_proj["%s" % b] = HistogramNorm(fit_hist_proj["%s" % b])
-    fit_hist_proj["%s" % b] = fit_hist_proj["%s" % b].astype(float)/norm_proj["%s" % b]
-    err_hist_proj["%s" % b] = err_hist_proj["%s" % b].astype(float)/norm_proj["%s" % b]
-      
-    #Binning for equi-populated bins
-    bin_centres = []
-    bin_width = []
-    for j in range(0,len(qc_bin_vals["%s" % b])-1):
-      bin_centres.append(0.5*(qc_bin_vals["%s" % b][j]+qc_bin_vals["%s" % b][j+1]))
-      bin_width.append(0.5*(qc_bin_vals["%s" % b][j+1]-qc_bin_vals["%s" % b][j]))
-    
-    #Binning for equal sized bins
-    #bin_width = 0.5*float(var_range[b][1] - var_range[b][0])/var_bins[b]    
-    #bin_centres = []
-    #for j in range(0,var_bins[b]):
-    #	bin_centres.append(var_range[b][0]+bin_width + j*2*bin_width)
-      
-    fit_result_proj["%s" % b] = np.sum(fit_result, axis=tuple(axis), keepdims=False)
-  		
-    fig,ax = plt.subplots(figsize=(7,7))
-    
-    #Plot data
-    plt.errorbar(bin_centres,fit_hist_proj["%s" % b],yerr=err_hist_proj["%s" % b],ls='none',color='k',markersize='3',fmt='o',label="Data")
-    
-    #Components (use ordered dictionary to keep the order)
-    comps = collections.OrderedDict()
-    
-    comps["d0"] = (np.sum(frac["D0"]*histos_bkg["D0"], axis=tuple(axis), keepdims=False), "magenta", "$B \\to D^{*} D^{0} (X)$")
-    comps["prompt"] = (comps["d0"][0] + (np.sum((1.0 - frac_signal.fitted_value - frac_Ds.fitted_value - frac_Dplus.fitted_value - frac['feed'] - frac["D0"])*histos_bkg["prompt"], axis=tuple(axis), keepdims=False)), "lightgrey", "$B \\to D^{*} 3\\pi (X)$")
-    comps["dplus"] = (comps["prompt"][0] + (np.sum(frac_Dplus.fitted_value*histos_bkg["Dplus"], axis=tuple(axis), keepdims=False)), "blue", "$B \\to D^{*} D^{+} (X)$")
-    comps["ds"] = (comps["dplus"][0] + (np.sum(frac_Ds.fitted_value*histos_bkg["Ds"], axis=tuple(axis), keepdims=False)), "orange", "$B \\to D^{*} D_{s} (X)$")
-    comps["feed"] = (comps["ds"][0] + (np.sum(feed_frac*frac_signal.fitted_value*histos_bkg["feed"], axis=tuple(axis), keepdims=False)), "aquamarine", "$B \\to D^{**} \\tau \\nu$")
-    comps["sig"] = (fit_result_proj["%s" % b], "red", "$B^0 \\to D^{*} \\tau \\nu$")
-    
-    comp_list = comps.keys()
-    comp_list.reverse()
-  	
-    #Loop over components
-    for c in comp_list:
-      #Loop over variable bins
-      for k in range(0,len(bin_width)):
-      	if(k==0):
-      		label = comps[c][2]
-      	else:
-      		label = ""
-        plt.bar(bin_centres[k],comps[c][0][k], 2*bin_width[k], color=comps[c][1],label=label)
-  			
-    plt.ylabel("Density")
-    plt.xlabel(var_titles[b])
-    plt.legend(loc='lower right')
-      
-    y_min,y_max = ax.get_ylim()
-    plt.ylim(0.0,y_max*1.05)
-    plt.show()
-      
-    if(toy=="N"):
-      fig.savefig('figs/%s_%s_%s_%s_%s_Hammer_%s%s.pdf' % (b,sub_mode,geom,var_type,num_sig,ham,syst_name))
-
-
-  #Unrolled 1D plot of all bins
-  fit_result_1d = fit_result.ravel()
-    
-  data_norm = fit_hist.astype(float)/norm
-  data_norm_1d = data_norm.ravel()
-    
-  err_norm = err_hist.astype(float)/norm
-  err_norm_1d = err_norm.ravel()
-    
-  x_max = var_bins["costheta_D_%s" % var_type] * var_bins["costheta_L_%s" % var_type] * var_bins["chi_%s" % var_type] * var_bins["BDT"]
-  x = np.linspace(0,x_max-1,x_max)
-    
-  fig,ax = plt.subplots(figsize=(15,5))
-    
-  plt.bar(x,fit_result_1d,edgecolor=None,color='r',alpha=0.5,label="Fit")
-  plt.errorbar(x,data_norm_1d,yerr=err_norm_1d,ls='none',color='k',markersize='3',fmt='o',alpha=0.8,label="Data")
-    
-  plt.ylabel("Density")
-  plt.xlabel("Bin number")
-  plt.xlim(-1,x_max)
-    
-  plt.legend()
-    
-  plt.tight_layout()
-  plt.show()
-  if(toy=="N"):
-    fig.savefig('figs/Fit_Lifetime_%s_%s_%s_%s_Hammer_%s%s.pdf' % (sub_mode,geom,var_type,num_sig,ham,syst_name))
-      
-  		
-    #Pull plot	
-  pull = (data_norm_1d - fit_result_1d)/err_norm_1d
-    
-  fig,ax = plt.subplots(figsize=(15,5))
-    
-  plt.bar(x,pull,edgecolor='navy',color='royalblue',fill=True)
-    
-  plt.ylabel("Pull ($\sigma$)")
-  plt.xlabel("Bin number")
-  plt.xlim(-1,x_max)
-  plt.ylim(-5,5)
-    
-  plt.tight_layout()
-  plt.show()
-  if(toy=="N"):
-    fig.savefig('figs/Pull_Lifetime_%s_%s_%s_%s_Hammer_%s%s.pdf' % (sub_mode,geom,var_type,num_sig,ham,syst_name))
-  	
-    #Histogram of the pull values with a fit
-  fig,ax = plt.subplots(figsize=(7,7))
-      
-  pull_bins = int(np.sqrt(x_max))
-  n, hist_bins, patches = plt.hist(pull,bins=pull_bins,range=(-5,5),histtype='step',color='navy',normed=True)
-    
-  plt.xlabel("Pull value ($\\sigma$)")
-  plt.ylabel("Fraction of bins")
-    
-  mu = pull.mean()
-  mu_err = sem(pull)
-  sigma = pull.std()
-    
-  plt.title("$\\mu_{Pull} = %.3f \\pm %.3f$, $\\sigma_{Pull} = %.3f$" % (mu,mu_err,sigma))
-    
-  plt.show()
-  if(toy=="N"):
-    fig.savefig('figs/Pull_Hist_Lifetime_%s_%s_%s_%s_Hammer_%s%s.pdf' % (sub_mode,geom,var_type,num_sig,ham,syst_name))
