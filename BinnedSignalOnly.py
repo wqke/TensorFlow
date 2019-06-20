@@ -77,6 +77,22 @@ def BinnedLikelihood(pdf,data,norm):
 	pdf = tf.scalar_mul(norm,pdf)
 	return tf.reduce_sum(pdf - data + data*tf.log(data/pdf))
 
+frac={}
+#Branching fractions from PDG
+frac['B2D0TauNu']=7.7e-3
+frac['B2DstTauNu']=1.57e-2
+frac['Dst2D0Pi']=0.677
+#D0 and D* fractions in the sample
+frac['D0']=frac['B2D0TauNu']+frac['B2DstTauNu']*frac['Dst2D0Pi']   #0.0183
+frac['Dst']=frac['B2DstTauNu']                                     #0.0157
+tot=frac['D0']+frac['Dst']*0.5					   #total sample=D0 sample + D* whose pion is reconstructed
+#initial values used in the fit
+frac['Dst']=frac['Dst']/tot
+frac['D0']=frac['D0']/tot			                   #redefine to have total fraction=1
+frac['DstinD0']=frac['Dst']*0.5/frac['D0']     		           #the fraction of D* reco as D0 in D0 sample
+
+
+
 if __name__ == "__main__" :
 
   #Read RapidSim signal sample for either 3pi mode or 3pipi0 mode
