@@ -235,9 +235,11 @@ if __name__ == "__main__" :
   I8  = tfa.FitParameter("I8"  , Iinit_vals["I8"], -1, 1)
   I9  = tfa.FitParameter("I9"  , Iinit_vals["I9"], -1, 1)
 
-  frac_Dst_in_D0  = tfa.FitParameter("frca_Dst_in_D0"  ,0.5 , 0., 1.)
-  frac_D0  = tfa.FitParameter("frac_D0"  , 0.5 , 0., 1.)
-  
+  frac_Dst_in_D0  = tfa.FitParameter("frca_Dst_in_D0"  ,frac['DstinD0'] , 0., 1.)
+  frac_D0  = tfa.FitParameter("frac_D0"  , frac['D0'] , 0., 1.)
+  #frac_Dst_not_in_D0=1-frac_D0
+	
+	
   #File used to create templates (flat sample with unbinned weights)
   template_file_D0 = "/data/lhcb/users/hill/Bd2DstTauNu_Angular/RapidSim_tuples/Bu2D0TauNu/3pi_%s_Total/model_vars_weights.root" % geom
   branch_names.append("Tau_FD")
